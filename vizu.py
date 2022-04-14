@@ -42,7 +42,13 @@ def visualize_mask(gifti_image):
 	set_axes_equal(ax)
 	plt.show()
 	
-def visualize_fiedler(graph,fiedler_vector):
+def visualize_fiedler_extrema(coords,fiedler_vector,ax):
+	ind_min = np.argmin(fiedler_vector)
+	ind_max = np.argmax(fiedler_vector)
+	ax.scatter(coords[ind_min,0],coords[ind_min,1],coords[ind_min,2],c="y",s=100)
+	ax.scatter(coords[ind_max,0],coords[ind_max,1],coords[ind_max,2],c="y",s=100)
+	
+def visualize_fiedler(graph,fiedler_vector,title=""):
 	n = len(graph.nodes)
 	coords = np.zeros((n,3))
 	for i,node in enumerate(graph.nodes):
@@ -53,6 +59,8 @@ def visualize_fiedler(graph,fiedler_vector):
 	ax = plt.axes(projection="3d")
 	#ax.set_box_aspect((1,1,1))
 	ax.scatter(coords[:,0],coords[:,1],coords[:,2],c=fiedler_vector,cmap="jet")
+	visualize_fiedler_extrema(coords,fiedler_vector,ax)
+	plt.title(title)
 	set_axes_equal(ax)
 	plt.show()
 
