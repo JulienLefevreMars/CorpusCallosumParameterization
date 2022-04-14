@@ -63,4 +63,16 @@ def visualize_fiedler(graph,fiedler_vector,title=""):
 	plt.title(title)
 	set_axes_equal(ax)
 	plt.show()
+	
+def compute_isolines(fiedler_vector,nbins=100):
+	vmin = np.min(fiedler_vector)
+	vmax = np.max(fiedler_vector)
+	isolines = np.zeros((len(fiedler_vector),))
+	intervals = np.linspace(vmin,vmax,nbins)
+	for i in range(0,len(intervals)-1,2):
+		isolines[np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])] = 1.
+	return isolines
+		
 
+
+	

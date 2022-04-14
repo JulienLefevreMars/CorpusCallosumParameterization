@@ -23,10 +23,13 @@ if __name__ =="__main__":
 	#vz.visualize_mask(g)
 
 	# 2. Compute Fiedler vector	and extrema
-	graph = vsa.image_to_graph(mask)
+	graph = vsa.image_to_graph(mask,graph_type="geometry")
 	fiedler_vector = nx.fiedler_vector(graph)
 
 	vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
+	
+	# 3. Isolines
+ vz.visualize_fiedler(graph,vz.compute_isolines(fiedler_vector,nbins=50),title=subject_name)
 
 	
 
