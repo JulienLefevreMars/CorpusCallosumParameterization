@@ -25,10 +25,11 @@ def distance(p,points):
 	
 def compute_thickness(fiedler_vector,coords,nbins=100):
 	barycenters, intervals = compute_longitudinal_description(fiedler_vector, coords, nbins)
-	thickness = np.zeros((len(intervals)-1,))
+	thickness = np.zeros((len(intervals)-1,2))
 	for i in range(0,len(intervals)-1):
 		indices = np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])
-		thickness[i] = np.std(distance(barycenters[i,:], coords[indices,:]))
+		thickness[i,0] = 3*np.std(distance(barycenters[i,:], coords[indices,:]))
+		thickness[i,1] = np.max(distance(barycenters[i,:], coords[indices,:]))
 	return thickness
 	
 def texture_mapping(fiedler_vector, texture, intervals):

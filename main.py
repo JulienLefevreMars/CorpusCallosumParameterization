@@ -15,11 +15,20 @@ def graph_to_coords(graph):
 		coords[i,:] = node
 	return coords
 
+
 if __name__ =="__main__":
 	if len(sys.argv)==1:
 		name = "238"
 	else:
 		name = sys.argv[1]
+	if len(sys.argv)<=2:
+		fig_to_display = "00011"
+	else:
+		fig_to_display = sys.argv[2]
+		
+	if len(fig_to_display)!= 5:
+		print("second parameter should be of the form abcde where a,b,c,d,e are 0 or 1 depending wether you want to print a. Fiedler vector b. Isolines c. Skeleton d. profile e. thickness")
+	
 	data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 	subject_name = "corpus_callosum_mask_26c_" + name
 	filename = data_folder + subject_name  +  ".nii.gz"
@@ -33,30 +42,32 @@ if __name__ =="__main__":
 	# 2. Compute Fiedler vector	and extrema
 	graph = vsa.image_to_graph(mask,graph_type="geometry")
 	fiedler_vector = nx.fiedler_vector(graph)
-
-	#vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
+	
+	if fig_to_display[0] =="1": 
+		vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
 	
 	# 3. Isolines
-	#vz.visualize_fiedler(graph,sd.compute_isolines(fiedler_vector,nbins=50),title=subject_name)
+	if fig_to_display[1] =="1": 
+		vz.visualize_fiedler(graph,sd.compute_isolines(fiedler_vector,nbins=50)[0],title=subject_name)
 	
 	# 4. Skeleton 
 	coords = graph_to_coords(graph)
 	barycenters,intervals = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=50)
 	print(barycenters)
-	fig = vz.visualize_fiedler(graph,None,title=subject_name)
-	plt.gca().scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r')
-	plt.show()
+	if fig_to_display[2] =="1": 
+		fig = vz.visualize_fiedler(graph,None,title=subject_name)
+		plt.gca().scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r')
+	#plt.show()
 	
 	# 5. Thickness profile
 	thickness = sd.compute_thickness(fiedler_vector,coords,nbins=50)
-	plt.figure
-	plt.plot(thickness)
-	plt.title(subject_name)
-	plt.show()
+	if fig_to_display[3] =="1": 
+		vz.thickness_profile(thickness,subject_name)
 	
 	# 6. Thickness remapped on the image
-	texture_remapped = sd.texture_mapping(fiedler_vector, thickness, intervals)
-	vz.visualize_fiedler(graph,texture_remapped,title = subject_name)
+	texture_remapped = sd.texture_mapping(fiedler_vector, thickness[:,0], intervals)
+	if fig_to_display[4] =="1": 
+		vz.visualize_fiedler(graph,texture_remapped,title = subject_name)
 	plt.show()
 	
 	

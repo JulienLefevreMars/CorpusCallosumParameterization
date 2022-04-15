@@ -67,6 +67,16 @@ def visualize_fiedler(graph,fiedler_vector=None,title=""):
 	return fig
 	#plt.show()
 	
+def thickness_profile(thickness,subject_name,legend=['3 std','max']):
+	plt.figure()
+	for i in range(thickness.shape[1]):
+		plt.plot(range(len(thickness)),thickness[:,i])
+		ind_m = np.argmin(thickness[:,i])	
+		plt.scatter(ind_m,thickness[ind_m,i],c='k',s=50)
+	plt.legend(legend)
+	plt.title(subject_name)
+	plt.show()
+	
 
 		
 
