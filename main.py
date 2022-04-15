@@ -39,18 +39,24 @@ if __name__ =="__main__":
 	# 3. Isolines
 	#vz.visualize_fiedler(graph,sd.compute_isolines(fiedler_vector,nbins=50),title=subject_name)
 	
-	# 4. Skeleton
+	# 4. Skeleton 
 	coords = graph_to_coords(graph)
-	barycenters,_ = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=50)
+	barycenters,intervals = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=50)
 	print(barycenters)
 	fig = vz.visualize_fiedler(graph,None,title=subject_name)
 	plt.gca().scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r')
 	plt.show()
 	
+	# 5. Thickness profile
+	thickness = sd.compute_thickness(fiedler_vector,coords,nbins=50)
 	plt.figure
-	plt.plot(sd.compute_thickness(fiedler_vector,coords,nbins=50))
+	plt.plot()
 	plt.title(subject_name)
 	plt.show()
+	
+	# 6. Thickness remapped on the image
+	vz.vizualize_fiedler(graph,texture_mapping(fiedler_vector, thickness, intervals),title = subject_name)
+	
 	
 
 
