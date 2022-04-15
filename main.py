@@ -1,11 +1,19 @@
 import nibabel as nb
 import numpy as np
 import voxel_spectral_analysis as vsa
+import shape_description as sd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import networkx as nx
 import vizu as vz
 import sys
+
+def graph_to_coords(graph):
+	n = len(graph.nodes)
+	coords = np.zeros((n,3))
+	for i,node in enumerate(graph.nodes):
+		coords[i,:] = node
+	return coords
 
 if __name__ =="__main__":
 	if len(sys.argv)==1:
@@ -26,11 +34,23 @@ if __name__ =="__main__":
 	graph = vsa.image_to_graph(mask,graph_type="geometry")
 	fiedler_vector = nx.fiedler_vector(graph)
 
-	vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
+	#vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
 	
 	# 3. Isolines
- vz.visualize_fiedler(graph,vz.compute_isolines(fiedler_vector,nbins=50),title=subject_name)
-
+	#vz.visualize_fiedler(graph,sd.compute_isolines(fiedler_vector,nbins=50),title=subject_name)
+	
+	# 4. Skeleton
+	coords = graph_to_coords(graph)
+	barycenters,_ = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=50)
+	print(barycenters)
+	fig = vz.visualize_fiedler(graph,None,title=subject_name)
+	plt.gca().scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r')
+	plt.show()
+	
+	plt.figure
+	plt.plot(sd.compute_thickness(fiedler_vector,coords,nbins=50))
+	plt.title(subject_name)
+	plt.show()
 	
 
 

@@ -40,7 +40,7 @@ def visualize_mask(gifti_image):
 	ax = fig.add_subplot(111, projection='3d')
 	ax.scatter(x,y,z)
 	set_axes_equal(ax)
-	plt.show()
+	#plt.show()
 	
 def visualize_fiedler_extrema(coords,fiedler_vector,ax):
 	ind_min = np.argmin(fiedler_vector)
@@ -48,12 +48,14 @@ def visualize_fiedler_extrema(coords,fiedler_vector,ax):
 	ax.scatter(coords[ind_min,0],coords[ind_min,1],coords[ind_min,2],c="y",s=100)
 	ax.scatter(coords[ind_max,0],coords[ind_max,1],coords[ind_max,2],c="y",s=100)
 	
-def visualize_fiedler(graph,fiedler_vector,title=""):
+def visualize_fiedler(graph,fiedler_vector=None,title=""):
 	n = len(graph.nodes)
 	coords = np.zeros((n,3))
 	for i,node in enumerate(graph.nodes):
 		coords[i,:] = node
 	
+	if fiedler_vector is None:
+		fiedler_vector = np.zeros((n,))
 	fig = plt.figure()
 	#ax = fig.add_subplot(111, projection='3d')
 	ax = plt.axes(projection="3d")
@@ -62,16 +64,10 @@ def visualize_fiedler(graph,fiedler_vector,title=""):
 	visualize_fiedler_extrema(coords,fiedler_vector,ax)
 	plt.title(title)
 	set_axes_equal(ax)
-	plt.show()
+	return fig
+	#plt.show()
 	
-def compute_isolines(fiedler_vector,nbins=100):
-	vmin = np.min(fiedler_vector)
-	vmax = np.max(fiedler_vector)
-	isolines = np.zeros((len(fiedler_vector),))
-	intervals = np.linspace(vmin,vmax,nbins)
-	for i in range(0,len(intervals)-1,2):
-		isolines[np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])] = 1.
-	return isolines
+
 		
 
 
