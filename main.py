@@ -50,12 +50,14 @@ if __name__ =="__main__":
 	# 5. Thickness profile
 	thickness = sd.compute_thickness(fiedler_vector,coords,nbins=50)
 	plt.figure
-	plt.plot()
+	plt.plot(thickness)
 	plt.title(subject_name)
 	plt.show()
 	
 	# 6. Thickness remapped on the image
-	vz.vizualize_fiedler(graph,texture_mapping(fiedler_vector, thickness, intervals),title = subject_name)
+	texture_remapped = sd.texture_mapping(fiedler_vector, thickness, intervals)
+	vz.visualize_fiedler(graph,texture_remapped,title = subject_name)
+	plt.show()
 	
 	
 

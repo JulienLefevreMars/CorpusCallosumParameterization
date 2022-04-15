@@ -32,8 +32,8 @@ def compute_thickness(fiedler_vector,coords,nbins=100):
 	return thickness
 	
 def texture_mapping(fiedler_vector, texture, intervals):
-	texture = np.zeros((len(fiedler_vector),))
+	texture_mapped = np.zeros((len(fiedler_vector),))
 	for i in range(0,len(intervals)-1):
 		indices = np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])
-		texture[indices] = texture[i]
-	return texture
+		texture_mapped[indices] = texture[i]
+	return texture_mapped
