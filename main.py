@@ -43,30 +43,30 @@ if __name__ =="__main__":
 	graph = vsa.image_to_graph(mask,graph_type="geometry")
 	fiedler_vector = nx.fiedler_vector(graph)
 	
-	if fig_to_display[0] =="1": 
+	if fig_to_display[0] == "1": 
 		vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
 	
 	# 3. Isolines
-	if fig_to_display[1] =="1": 
+	if fig_to_display[1] == "1": 
 		vz.visualize_fiedler(graph,sd.compute_isolines(fiedler_vector,nbins=50)[0],title=subject_name)
 	
 	# 4. Skeleton 
 	coords = graph_to_coords(graph)
 	barycenters,intervals = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=50)
 	#print(barycenters)
-	if fig_to_display[2] =="1": 
+	if fig_to_display[2] == "1": 
 		fig = vz.visualize_fiedler(graph,None,title=subject_name)
 		plt.gca().scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r')
 	#plt.show()
 	
 	# 5. Thickness profile
 	thickness = sd.compute_thickness(fiedler_vector,coords,nbins=50)
-	if fig_to_display[3] =="1": 
+	if fig_to_display[3] == "1": 
 		vz.thickness_profile(thickness,subject_name)
 	
 	# 6. Thickness remapped on the image
 	texture_remapped = sd.texture_mapping(fiedler_vector, thickness[:,0], intervals)
-	if fig_to_display[4] =="1": 
+	if fig_to_display[4] == "1": 
 		vz.visualize_fiedler(graph,texture_remapped,title = subject_name)
 	plt.show()
 	
