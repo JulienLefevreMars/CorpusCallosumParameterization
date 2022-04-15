@@ -29,6 +29,7 @@ def add_valid_edge(g,inds,mask,graph_type="topology"):
 				if mask[x+i,y+j,z+k]!=0:
 					if graph_type=="geometry":
 						weight = np.exp(-(i**2 + j**2 + k**2)/sigma**2)
+						#print(weight)
 					g.add_edge(inds,(x+i,y+j,z+k),weight=weight)
 	
 
