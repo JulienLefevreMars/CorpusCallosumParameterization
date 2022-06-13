@@ -68,6 +68,6 @@ def get_diameter_fiedler(graph,compute_diameter=False):
 		t0 = time.time()
 		diameter = nx.diameter(graph)
 		print("Diameter, comp. time = ",time.time()-t0)
-	return diameter, diameter, fiedler_vector
+	return diameter_fiedler, diameter, fiedler_vector
 	
 

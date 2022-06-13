@@ -50,7 +50,7 @@ if __name__ =="__main__":
 	
 	# 4. Skeleton 
 	coords = vsa.graph_to_coords(graph)
-	barycenters,intervals = sd.compute_longitudinal_description(fiedler_vector,np.array(coords),nbins=50)
+	barycenters,intervals,coords = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=50)
 	#print(barycenters)
 	if fig_to_display[2] == "1": 
 		fig = vz.visualize_fiedler(graph,None,title=subject_name)
