@@ -8,12 +8,7 @@ import networkx as nx
 import vizu as vz
 import sys
 
-def graph_to_coords(graph):
-	n = len(graph.nodes)
-	coords = np.zeros((n,3))
-	for i,node in enumerate(graph.nodes):
-		coords[i,:] = node
-	return coords
+
 
 
 if __name__ =="__main__":
@@ -41,6 +36,7 @@ if __name__ =="__main__":
 
 	# 2. Compute Fiedler vector	and extrema
 	graph = vsa.image_to_graph(mask,graph_type="geometry")
+	print(graph)
 	diameter_fiedler, diameter, fiedler_vector = vsa.get_diameter_fiedler(graph)
 	print("Diameter Fiedler = " + diameter_fiedler)
 	print("Diameter  = " + diameter)
@@ -53,7 +49,7 @@ if __name__ =="__main__":
 		vz.visualize_fiedler(graph,sd.compute_isolines(fiedler_vector,nbins=50)[0],title=subject_name)
 	
 	# 4. Skeleton 
-	coords = graph_to_coords(graph)
+	coords = vsa.graph_to_coords(graph)
 	barycenters,intervals = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=50)
 	#print(barycenters)
 	if fig_to_display[2] == "1": 

@@ -1,6 +1,14 @@
 import numpy as np
 import networkx as nx
 
+def graph_to_coords(graph):
+	n = len(graph.nodes)
+	coords = np.zeros((n,3))
+	for i,node in enumerate(graph.nodes):
+		coords[i,:] = node
+	return coords
+	
+
 def image_to_points(mask,voxel_size=[1,1,1]):
 	""" 
 	Create 3D points from a mask of voxels
@@ -44,7 +52,12 @@ def get_diameter_fiedler(graph):
 	fiedler_vector = nx.fiedler_vector(graph)
 	i_min = np.argmin(fiedler_vector)
 	i_max = np.argmax(fiedler_vector)
-	diameter_fiedler = nx.shortest_path(graph,i_min,i_max)
+	coords = graph_to_coords(graph) # object oriented approach would be better :-)
+	node_min = coords[i_min,:]
+	node_max = coords[i_max,:]
+	print(node_max,node_min,len(fiedler_vector))
+	print(graph.graph)
+	diameter_fiedler = nx.shortest_path(graph,node_min,node_max)
 	diameter = nx.diameter(graph)
 	return diameter, diameter, fiedler_vector
 	
