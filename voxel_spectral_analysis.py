@@ -40,4 +40,12 @@ def image_to_graph(mask,graph_type="topology"):
 		add_valid_edge(g, (ix[i],iy[i],iz[i]), mask,graph_type)
 	return g
 	
+def get_diameter_fiedler(graph):
+	fiedler_vector = nx.fiedler_vector(graph)
+	i_min = np.argmin(fiedler_vector)
+	i_max = np.argmax(fiedler_vector)
+	diameter_fiedler = nx.shortest_path(graph,i_min,i_max)
+	diameter = nx.diameter(graph)
+	return diameter, diameter, fiedler_vector
+	
 

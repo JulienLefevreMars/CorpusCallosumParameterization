@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def compute_isolines(fiedler_vector,nbins=100):
 	vmin = np.min(fiedler_vector)
 	vmax = np.max(fiedler_vector)

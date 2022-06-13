@@ -41,7 +41,9 @@ if __name__ =="__main__":
 
 	# 2. Compute Fiedler vector	and extrema
 	graph = vsa.image_to_graph(mask,graph_type="geometry")
-	fiedler_vector = nx.fiedler_vector(graph)
+	diameter_fiedler, diameter, fiedler_vector = vsa.get_diameter_fiedler(graph)
+	print("Diameter Fiedler = " + diameter_fiedler)
+	print("Diameter  = " + diameter)
 	
 	if fig_to_display[0] == "1": 
 		vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
