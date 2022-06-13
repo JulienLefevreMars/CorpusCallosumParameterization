@@ -11,6 +11,7 @@ def compute_isolines(fiedler_vector,nbins=100):
 	return isolines,intervals
 	
 def compute_longitudinal_description(fiedler_vector,coords,nbins=100):
+	# coords is a list of tuples
 	vmin = np.min(fiedler_vector)
 	vmax = np.max(fiedler_vector)
 	barycenters = np.zeros((nbins-1,3))

@@ -30,16 +30,16 @@ if __name__ =="__main__":
 	g = nb.load(filename)
 	mask = np.asanyarray(g.dataobj)
 	(x,y,z) = vsa.image_to_points(mask,g.header['pixdim'][1:4])
-	
+
 	# 1. Visualize the points of the mask
 	#vz.visualize_mask(g)
 
 	# 2. Compute Fiedler vector	and extrema
 	graph = vsa.image_to_graph(mask,graph_type="geometry")
-	print(graph)
+	#print(graph.nodes)
 	diameter_fiedler, diameter, fiedler_vector = vsa.get_diameter_fiedler(graph)
-	print("Diameter Fiedler = " + diameter_fiedler)
-	print("Diameter  = " + diameter)
+	print("Diameter Fiedler = ", diameter_fiedler)
+	print("Diameter  = ",diameter)
 	
 	if fig_to_display[0] == "1": 
 		vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
@@ -50,7 +50,7 @@ if __name__ =="__main__":
 	
 	# 4. Skeleton 
 	coords = vsa.graph_to_coords(graph)
-	barycenters,intervals = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=50)
+	barycenters,intervals = sd.compute_longitudinal_description(fiedler_vector,np.array(coords),nbins=50)
 	#print(barycenters)
 	if fig_to_display[2] == "1": 
 		fig = vz.visualize_fiedler(graph,None,title=subject_name)

@@ -1,11 +1,13 @@
 import numpy as np
 import networkx as nx
+import time
 
 def graph_to_coords(graph):
 	n = len(graph.nodes)
-	coords = np.zeros((n,3))
+	coords = []# np.zeros((n,),dtype=int)
 	for i,node in enumerate(graph.nodes):
-		coords[i,:] = node
+		coords.append(node)
+		#coords[i,:] = node
 	return coords
 	
 
@@ -48,17 +50,24 @@ def image_to_graph(mask,graph_type="topology"):
 		add_valid_edge(g, (ix[i],iy[i],iz[i]), mask,graph_type)
 	return g
 	
-def get_diameter_fiedler(graph):
+	
+def get_diameter_fiedler(graph,compute_diameter=False):
 	fiedler_vector = nx.fiedler_vector(graph)
 	i_min = np.argmin(fiedler_vector)
 	i_max = np.argmax(fiedler_vector)
 	coords = graph_to_coords(graph) # object oriented approach would be better :-)
-	node_min = coords[i_min,:]
-	node_max = coords[i_max,:]
-	print(node_max,node_min,len(fiedler_vector))
-	print(graph.graph)
+	node_min = coords[i_min]
+	node_max = coords[i_max]
+	#print(node_max,node_min,len(fiedler_vector))
+	#print(graph.graph)
+	t0 = time.time()
 	diameter_fiedler = nx.shortest_path(graph,node_min,node_max)
-	diameter = nx.diameter(graph)
+	print("Fiedler distance, comp. time = ",time.time()-t0)
+	diameter = -1
+	if compute_diameter:
+		t0 = time.time()
+		diameter = nx.diameter(graph)
+		print("Diameter, comp. time = ",time.time()-t0)
 	return diameter, diameter, fiedler_vector
 	
 
