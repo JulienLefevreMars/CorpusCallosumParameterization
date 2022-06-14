@@ -36,7 +36,7 @@ if __name__ =="__main__":
 
 	# 2. Compute Fiedler vector	and extrema
 	graph = vsa.image_to_graph(mask,graph_type="geometry")
-	#print(graph.nodes)
+	print(graph.nodes)
 	diameter_fiedler, diameter, fiedler_vector = vsa.get_diameter_fiedler(graph)
 	print("Diameter Fiedler = ", diameter_fiedler)
 	print("Diameter  = ",diameter)
@@ -52,14 +52,22 @@ if __name__ =="__main__":
 	coords = vsa.graph_to_coords(graph)
 	barycenters,intervals,coords = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=50)
 	if fig_to_display[2] == "1": 
-		fig = vz.visualize_fiedler(graph,None,title=subject_name)
+		fig, ax = vz.visualize_fiedler(graph,None,title=subject_name)
 		plt.gca().scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r')
 	#plt.show()
 	
 	# 5. Thickness profile
-	thickness = sd.compute_thickness(fiedler_vector,coords,nbins=50)
+	thickness, slices = sd.compute_thickness(fiedler_vector,coords,nbins=50)
 	if fig_to_display[3] == "1": 
 		vz.thickness_profile(thickness,subject_name)
+	
+	if fig_to_display[4] == "1":
+		for i in range(len(slices)):
+			if i==0:
+				fig, ax = vz.visualize_fiedler(slices[i][0],slices[i][1])
+			else:
+				fig, ax = vz.visualize_fiedler(slices[i][0],slices[i][1],"",fig,ax)
+		vz.set_axes_equal(ax,coords)
 	
 	# 6. Thickness remapped on the image
 	texture_remapped = sd.texture_mapping(fiedler_vector, thickness[:,0], intervals)

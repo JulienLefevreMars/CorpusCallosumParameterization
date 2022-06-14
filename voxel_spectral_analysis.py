@@ -64,7 +64,7 @@ def points_to_graph(points,graph_type="topology"):
 			if is_neighbour(points[i,:],points[j,:]):
 				if graph_type=="geometry":
 					weight = np.exp(-np.sum((points[i,:]-points[j,:])**2)/sigma**2)
-				g.add_edge(points[i,:],points[j,:],weight = weight)
+				g.add_edge(tuple(points[i,:]),tuple(points[j,:]),weight = weight)
 	return g
 	
 	
@@ -79,12 +79,12 @@ def get_diameter_fiedler(graph,compute_diameter=False):
 	#print(graph.graph)
 	t0 = time.time()
 	diameter_fiedler = nx.shortest_path(graph,node_min,node_max)
-	print("Fiedler distance, comp. time = ",time.time()-t0)
+	#print("Fiedler distance, comp. time = ",time.time()-t0)
 	diameter = -1
 	if compute_diameter:
 		t0 = time.time()
 		diameter = nx.diameter(graph)
-		print("Diameter, comp. time = ",time.time()-t0)
-	return diameter_fiedler, diameter, fiedler_vector
+		#print("Diameter, comp. time = ",time.time()-t0)
+	return len(diameter_fiedler), diameter, fiedler_vector
 	
 

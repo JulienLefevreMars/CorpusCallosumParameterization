@@ -1,4 +1,6 @@
 import numpy as np
+import voxel_spectral_analysis as vsa
+import sklearn.decomposition as sd
 
 
 def compute_isolines(fiedler_vector,nbins=100):
@@ -43,18 +45,29 @@ def compute_thickness_stats(fiedler_vector,coords,nbins=100):
 	
 def compute_thickness(fiedler_vector,coords,nbins=100):
 	# compute cortical thickness by using on each slice the Fiedler distance of the resulting graph
-	intervals = np.linspace(vmin,vmax,nbins-1)
-	thickness = np.zeros((len(intervals)-1,3))
+	barycenters, intervals, coords = compute_longitudinal_description(fiedler_vector, coords, nbins)
+	thickness = np.zeros((len(intervals)-1,4))
+	slices = []
 	for i in range(0,len(intervals)-1):
-		slice_points = coords[np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])]
+		# 1. Skeletonization
+		indices = np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])
+		slice_points = coords[indices]
 		barycenters[i,:] = np.mean(slice_points,axis=0)
 		thickness[i,0] = 3*np.std(distance(barycenters[i,:], coords[indices,:]))
 		thickness[i,1] = np.max(distance(barycenters[i,:], coords[indices,:]))
-		# Convert a slice in a graph
+		# 2. Convert a slice in a graph
 		slice_graph = vsa.points_to_graph(slice_points,graph_type="topology")
-		diameter,_,fiedler_slice = get_diameter_fiedler(slice_graph)
-		thickness[i,2] = diameter
-	return thickness
+		#print(slice_graph)
+		res = vsa.get_diameter_fiedler(slice_graph)
+		print(res)
+		thickness[i,2] = res[0]
+		slices.append([slice_graph,res[2]])
+		# 3. PCA
+		pca = sd.PCA(n_components=2)
+		pca.fit(slice_points)
+		projection = pca.transform(slice_points)
+		thickness[i,3] = np.max(projection) - np.min(projection)
+	return thickness, slices
 	
 	
 def texture_mapping(fiedler_vector, texture, intervals):
