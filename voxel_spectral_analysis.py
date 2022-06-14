@@ -30,8 +30,8 @@ def add_valid_edge(g,inds,mask,graph_type="topology"):
 	-mask: 3D image
 	"""
 	x,y,z=inds
-	weight = 1
-	sigma = 1
+	weight = 1 # TO DO: to be adapted
+	sigma = 2.
 	#print(graph_type)
 	for i in range(-1,2):
 		for j in range(-1,2):
@@ -57,13 +57,14 @@ def is_neighbour(p,q):
 	
 def points_to_graph(points,graph_type="topology"):
 	g = nx.Graph()
-	weight = 1
-	sigma = 1
+	weight = 1 # TO DO: to be adapted
+	sigma = 0.5
 	for i in range(len(points)):
 		for j in range(len(points)):
 			if is_neighbour(points[i,:],points[j,:]):
 				if graph_type=="geometry":
 					weight = np.exp(-np.sum((points[i,:]-points[j,:])**2)/sigma**2)
+					#print(weight)
 				g.add_edge(tuple(points[i,:]),tuple(points[j,:]),weight = weight)
 	return g
 	
@@ -78,13 +79,13 @@ def get_diameter_fiedler(graph,compute_diameter=False):
 	#print(node_max,node_min,len(fiedler_vector))
 	#print(graph.graph)
 	t0 = time.time()
-	diameter_fiedler = nx.shortest_path(graph,node_min,node_max)
+	diameter_fiedler = nx.dijkstra_path_length(graph,node_min,node_max,weight="geometry")
 	#print("Fiedler distance, comp. time = ",time.time()-t0)
 	diameter = -1
 	if compute_diameter:
 		t0 = time.time()
 		diameter = nx.diameter(graph)
 		#print("Diameter, comp. time = ",time.time()-t0)
-	return len(diameter_fiedler), diameter, fiedler_vector
+	return diameter_fiedler, diameter, fiedler_vector
 	
 

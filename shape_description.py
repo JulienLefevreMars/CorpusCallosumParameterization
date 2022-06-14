@@ -11,7 +11,18 @@ def compute_isolines(fiedler_vector,nbins=100):
 	for i in range(0,len(intervals)-1,2):
 		isolines[np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])] = i
 	return isolines,intervals
-	
+
+def irregular_binning(fiedler,nbins=100):
+	# Same as histogram equalization
+	hist,bin_edges = np.histogram(fiedler,bins=nbins,density=False)
+	cdf = np.cumsum(hist)
+	new_fiedler = np.zeros(fiedler.shape)
+	print(hist)
+	for i in range(len(bin_edges)-1):
+		indices = np.logical_and(fiedler>=bin_edges[i],fiedler<bin_edges[i+1])
+		new_fiedler[indices] = cdf[i]
+	intervals = np.linspace(np.min(new_fiedler),np.max(new_fiedler),nbins-1)
+	return intervals, new_fiedler
 	
 def compute_longitudinal_description(fiedler_vector,coords_nodes,nbins=100):
 	'''
@@ -23,7 +34,9 @@ def compute_longitudinal_description(fiedler_vector,coords_nodes,nbins=100):
 	vmin = np.min(fiedler_vector)
 	vmax = np.max(fiedler_vector)
 	barycenters = np.zeros((nbins-1,3))
-	intervals = np.linspace(vmin,vmax,nbins-1)
+	#intervals = np.linspace(vmin,vmax,nbins-1)
+	intervals, fiedler_vector = irregular_binning(fiedler_vector,nbins)
+	print(fiedler_vector)
 	for i in range(0,len(intervals)-1):
 		barycenters[i,:] = np.mean(coords[np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])],axis=0)
 	return barycenters,intervals, coords
@@ -56,10 +69,10 @@ def compute_thickness(fiedler_vector,coords,nbins=100):
 		thickness[i,0] = 3*np.std(distance(barycenters[i,:], coords[indices,:]))
 		thickness[i,1] = np.max(distance(barycenters[i,:], coords[indices,:]))
 		# 2. Convert a slice in a graph
-		slice_graph = vsa.points_to_graph(slice_points,graph_type="topology")
+		slice_graph = vsa.points_to_graph(slice_points,graph_type="geometry")
 		#print(slice_graph)
 		res = vsa.get_diameter_fiedler(slice_graph)
-		print(res)
+		#print(res)
 		thickness[i,2] = res[0]
 		slices.append([slice_graph,res[2]])
 		# 3. PCA
