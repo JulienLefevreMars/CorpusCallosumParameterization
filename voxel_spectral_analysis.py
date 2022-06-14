@@ -50,6 +50,23 @@ def image_to_graph(mask,graph_type="topology"):
 		add_valid_edge(g, (ix[i],iy[i],iz[i]), mask,graph_type)
 	return g
 	
+def is_neighbour(p,q):
+	# Test 26 connexity for p and q: sup norm
+	return np.max(np.abs(p-q))==1
+		
+	
+def points_to_graph(points,graph_type="topology"):
+	g = nx.Graph()
+	weight = 1
+	sigma = 1
+	for i in range(len(points)):
+		for j in range(len(points)):
+			if is_neighbour(points[i,:],points[j,:]):
+				if graph_type=="geometry":
+					weight = np.exp(-np.sum((points[i,:]-points[j,:])**2)/sigma**2)
+				g.add_edge(points[i,:],points[j,:],weight = weight)
+	return g
+	
 	
 def get_diameter_fiedler(graph,compute_diameter=False):
 	fiedler_vector = nx.fiedler_vector(graph)

@@ -10,8 +10,11 @@ def compute_isolines(fiedler_vector,nbins=100):
 		isolines[np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])] = i
 	return isolines,intervals
 	
+	
 def compute_longitudinal_description(fiedler_vector,coords_nodes,nbins=100):
-	# coords_nodes is a list of tuples
+	'''
+	Provides barycenters/skeleton of a shape by using isolines of Fiedler vector
+	'''
 	coords = np.zeros((len(coords_nodes),3),dtype=int)
 	for i in range(len(coords)):
 		coords[i,:] = coords_nodes[i]
@@ -43,12 +46,16 @@ def compute_thickness(fiedler_vector,coords,nbins=100):
 	intervals = np.linspace(vmin,vmax,nbins-1)
 	thickness = np.zeros((len(intervals)-1,3))
 	for i in range(0,len(intervals)-1):
-		barycenters[i,:] = np.mean(coords[np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])],axis=0)
+		slice_points = coords[np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])]
+		barycenters[i,:] = np.mean(slice_points,axis=0)
 		thickness[i,0] = 3*np.std(distance(barycenters[i,:], coords[indices,:]))
 		thickness[i,1] = np.max(distance(barycenters[i,:], coords[indices,:]))
 		# Convert a slice in a graph
-		
+		slice_graph = vsa.points_to_graph(slice_points,graph_type="topology")
+		diameter,_,fiedler_slice = get_diameter_fiedler(slice_graph)
+		thickness[i,2] = diameter
 	return thickness
+	
 	
 def texture_mapping(fiedler_vector, texture, intervals):
 	texture_mapped = np.zeros((len(fiedler_vector),))
