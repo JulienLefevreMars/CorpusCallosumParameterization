@@ -50,16 +50,19 @@ if __name__ =="__main__":
 	
 	# 4. Skeleton 
 	coords = vsa.graph_to_coords(graph)
-	barycenters,intervals,coords, fiedler_vector = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=200)
+	barycenters,intervals,coords, new_fiedler_vector = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=200,irregular_bins=True)
 	if fig_to_display[2] == "1": 
 		fig, ax = vz.visualize_fiedler(graph,None,title=subject_name)
 		plt.gca().scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r')
 	plt.show()
 
-	vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
+	zeros_ls = np.logical_and(new_fiedler_vector >=-0.001,new_fiedler_vector<0.001)
+	vz.visualize_fiedler(graph,zeros_ls,title=subject_name)
+	plt.show()
 	#'''
 	# 5. Thickness profile
-	thickness, slices = sd.compute_thickness(fiedler_vector,coords,nbins=50)
+	n_thickness=20
+	thickness, slices, intervals = sd.compute_thickness(new_fiedler_vector,coords,nbins=n_thickness)
 	if fig_to_display[3] == "1": 
 		vz.thickness_profile(thickness,subject_name)
 	
@@ -72,7 +75,9 @@ if __name__ =="__main__":
 		vz.set_axes_equal(ax,coords)
 	
 	# 6. Thickness remapped on the image
+	print(len(intervals))
 	texture_remapped = sd.texture_mapping(fiedler_vector, thickness[:,3], intervals)
+	texture_remapped = sd.texture_mapping(fiedler_vector, np.arange(0,19,1.), intervals)
 	if fig_to_display[4] == "1": 
 		vz.visualize_fiedler(graph,texture_remapped,title = subject_name)
 	plt.show()
