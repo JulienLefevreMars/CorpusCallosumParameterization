@@ -50,14 +50,16 @@ if __name__ =="__main__":
 	
 	# 4. Skeleton 
 	coords = vsa.graph_to_coords(graph)
-	barycenters,intervals,coords = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=50)
+	barycenters,intervals,coords, fiedler_vector = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=200)
 	if fig_to_display[2] == "1": 
 		fig, ax = vz.visualize_fiedler(graph,None,title=subject_name)
 		plt.gca().scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r')
 	plt.show()
+
+	vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
 	#'''
 	# 5. Thickness profile
-	thickness, slices = sd.compute_thickness(fiedler_vector,coords,nbins=80)
+	thickness, slices = sd.compute_thickness(fiedler_vector,coords,nbins=50)
 	if fig_to_display[3] == "1": 
 		vz.thickness_profile(thickness,subject_name)
 	

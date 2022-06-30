@@ -1,7 +1,7 @@
 import numpy as np
 import voxel_spectral_analysis as vsa
 import sklearn.decomposition as sd
-
+import matplotlib.pyplot as plt
 
 def compute_isolines(fiedler_vector,nbins=100):
 	vmin = np.min(fiedler_vector)
@@ -13,14 +13,20 @@ def compute_isolines(fiedler_vector,nbins=100):
 	return isolines,intervals
 
 def irregular_binning(fiedler,nbins=100):
+	vmin = np.min(fiedler)
+	vmax = np.max(fiedler)
 	# Same as histogram equalization
-	hist,bin_edges = np.histogram(fiedler,bins=nbins,density=False)
+	hist,bin_edges = np.histogram(fiedler,bins=nbins,density=True)
+	plt.plot(bin_edges[0:-1],hist)
+	plt.show()
 	cdf = np.cumsum(hist)
 	new_fiedler = np.zeros(fiedler.shape)
 	print(hist)
 	for i in range(len(bin_edges)-1):
 		indices = np.logical_and(fiedler>=bin_edges[i],fiedler<bin_edges[i+1])
-		new_fiedler[indices] = cdf[i]
+		new_fiedler[indices] = (vmax-vmin) * cdf[i] + vmin
+	plt.hist(new_fiedler,bins=int(nbins/10))
+	plt.show()
 	intervals = np.linspace(np.min(new_fiedler),np.max(new_fiedler),nbins-1)
 	return intervals, new_fiedler
 	
@@ -34,12 +40,12 @@ def compute_longitudinal_description(fiedler_vector,coords_nodes,nbins=100):
 	vmin = np.min(fiedler_vector)
 	vmax = np.max(fiedler_vector)
 	barycenters = np.zeros((nbins-1,3))
-	intervals = np.linspace(vmin,vmax,nbins-1)
-	#intervals, fiedler_vector = irregular_binning(fiedler_vector,nbins)
+	#intervals = np.linspace(vmin,vmax,nbins-1)
+	intervals, fiedler_vector = irregular_binning(fiedler_vector,nbins)
 	print(fiedler_vector)
 	for i in range(0,len(intervals)-1):
 		barycenters[i,:] = np.mean(coords[np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])],axis=0)
-	return barycenters,intervals, coords
+	return barycenters,intervals, coords, fiedler_vector
 	
 	
 def distance(p,points):
@@ -58,10 +64,11 @@ def compute_thickness_stats(fiedler_vector,coords,nbins=100):
 	
 def compute_thickness(fiedler_vector,coords,nbins=100):
 	# compute cortical thickness by using on each slice the Fiedler distance of the resulting graph
-	barycenters, intervals, coords = compute_longitudinal_description(fiedler_vector, coords, nbins)
+	barycenters, intervals, coords, fiedler_vector = compute_longitudinal_description(fiedler_vector, coords, nbins)
 	thickness = np.zeros((len(intervals)-1,4))
 	slices = []
 	for i in range(0,len(intervals)-1):
+		print(i)
 		# 1. Skeletonization
 		indices = np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])
 		slice_points = coords[indices]
