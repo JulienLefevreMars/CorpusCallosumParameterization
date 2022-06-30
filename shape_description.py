@@ -34,8 +34,8 @@ def compute_longitudinal_description(fiedler_vector,coords_nodes,nbins=100):
 	vmin = np.min(fiedler_vector)
 	vmax = np.max(fiedler_vector)
 	barycenters = np.zeros((nbins-1,3))
-	#intervals = np.linspace(vmin,vmax,nbins-1)
-	intervals, fiedler_vector = irregular_binning(fiedler_vector,nbins)
+	intervals = np.linspace(vmin,vmax,nbins-1)
+	#intervals, fiedler_vector = irregular_binning(fiedler_vector,nbins)
 	print(fiedler_vector)
 	for i in range(0,len(intervals)-1):
 		barycenters[i,:] = np.mean(coords[np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<intervals[i+1])],axis=0)
