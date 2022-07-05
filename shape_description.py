@@ -25,7 +25,7 @@ def irregular_binning(fiedler,nbins=100):
 	new_fiedler = np.zeros(fiedler.shape)
 	print(cdf)
 	for i in range(len(bin_edges)-1):
-		indices = np.logical_and(fiedler>=bin_edges[i],fiedler<bin_edges[i+1])
+		indices = np.logical_and(fiedler>=bin_edges[i],fiedler<=bin_edges[i+1])
 		new_fiedler[indices] = (vmax-vmin) * cdf[i] + vmin
 	plt.hist(new_fiedler,bins=int(nbins/10))
 	plt.title("Histogram of reparameterized Fiedler")
@@ -114,7 +114,7 @@ def compute_thickness(fiedler_vector,coords,nbins=100):
 	
 def texture_mapping(fiedler_vector, texture, intervals):
 	texture_mapped = np.zeros((len(fiedler_vector),))
-	for i in range(0,len(intervals)-1):
+	for i in range(0,len(texture)):
 		indices = np.logical_and(fiedler_vector >=intervals[i],fiedler_vector<=intervals[i+1])
 		texture_mapped[indices] = texture[i]
 	return texture_mapped
