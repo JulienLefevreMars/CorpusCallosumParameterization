@@ -55,7 +55,7 @@ def compute_longitudinal_description(fiedler_vector,coords_nodes,nbins=100,irreg
 	for i in range(0,nbins-1):
 		barycenters[i,:] = np.mean(coords[np.logical_and(new_fiedler_vector >=bins[i],new_fiedler_vector<bins[i+1])],axis=0)
 	if add_extremity:
-		barycenters = np.vstack([barycenters,coords[np.argmax(fiedler_vector),:]])
+		barycenters = np.vstack([coords[np.argmin(fiedler_vector),:],barycenters])
 	return barycenters,bins, coords, new_fiedler_vector
 	
 	

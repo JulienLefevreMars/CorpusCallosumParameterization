@@ -63,7 +63,7 @@ if __name__ =="__main__":
 	# 5. Re-parametrization
 	
 	# Length
-	#barycenters = np.vstack([barycenters,coords[np.argmax(new_fiedler_vector),:]])
+	barycenters = np.vstack([coords[np.argmin(new_fiedler_vector),:],barycenters])
 	length = np.sqrt(np.sum((barycenters[1:,:] - barycenters[0:-1,:])**2,axis=1))
 	cum_length = np.cumsum(length)
 	cum_length = cum_length/cum_length[-1]
