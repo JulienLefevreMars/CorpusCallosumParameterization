@@ -86,6 +86,16 @@ def thickness_profile(thickness,subject_name,legend=['3 std','max','fiedler','pc
 	plt.title(subject_name)
 	plt.show()
 	
+def thickness_profile_isometric(thickness,cum_length,subject_name,legend=['3 std','max','fiedler','pca']):
+	plt.figure()
+	for i in range(thickness.shape[1]):
+		plt.plot(cum_length,thickness[:,i])
+		ind_m = np.argmin(thickness[:,i])	
+		plt.scatter(cum_length[ind_m],thickness[ind_m,i],c='k',s=50)
+	plt.legend(legend)
+	plt.title(subject_name)
+	plt.show()
+	
 
 		
 

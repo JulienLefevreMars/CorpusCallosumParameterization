@@ -4,11 +4,11 @@ import time
 
 def graph_to_coords(graph):
 	n = len(graph.nodes)
-	coords = []# np.zeros((n,),dtype=int)
+	coords_nodes = []# np.zeros((n,),dtype=int)
 	for i,node in enumerate(graph.nodes):
-		coords.append(node)
+		coords_nodes.append(node)
 		#coords[i,:] = node
-	return coords
+	return coords_nodes
 	
 
 def image_to_points(mask,voxel_size=[1,1,1]):

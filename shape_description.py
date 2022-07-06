@@ -33,7 +33,7 @@ def irregular_binning(fiedler,nbins=100):
 	intervals = np.linspace(np.min(new_fiedler),np.max(new_fiedler),nbins)
 	return intervals, new_fiedler
 	
-def compute_longitudinal_description(fiedler_vector,coords_nodes,nbins=100,irregular_bins=False):
+def compute_longitudinal_description(fiedler_vector,coords_nodes,nbins=100,irregular_bins=False,add_extremity=False):
 	'''
 	Provides barycenters/skeleton of a shape by using isolines of Fiedler vector
 	'''
@@ -54,6 +54,8 @@ def compute_longitudinal_description(fiedler_vector,coords_nodes,nbins=100,irreg
 	print(len(bins),nbins)
 	for i in range(0,nbins-1):
 		barycenters[i,:] = np.mean(coords[np.logical_and(new_fiedler_vector >=bins[i],new_fiedler_vector<bins[i+1])],axis=0)
+	if add_extremity:
+		barycenters = np.vstack([barycenters,coords[np.argmax(fiedler_vector),:]])
 	return barycenters,bins, coords, new_fiedler_vector
 	
 	
@@ -94,7 +96,11 @@ def compute_thickness(fiedler_vector,coords,nbins=100):
 		# 2. Convert a slice in a graph
 		slice_graph = vsa.points_to_graph(slice_points,graph_type="geometry")
 		#print(slice_graph)
-		res = vsa.get_diameter_fiedler(slice_graph)
+		try:
+			res = vsa.get_diameter_fiedler(slice_graph)
+		except NetworkXError:
+			print("Problem with networkx")
+			res = [-1,-1,-1]
 		#print(res)
 		thickness[i,2] = res[0]
 		slices.append([slice_graph,res[2]])
