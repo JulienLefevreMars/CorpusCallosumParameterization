@@ -8,6 +8,9 @@ import networkx as nx
 import vizu as vz
 import sys
 
+
+
+
 if __name__ =="__main__":
 	if len(sys.argv)==1:
 		name = "238"
@@ -50,61 +53,26 @@ if __name__ =="__main__":
 	if fig_to_display[1] == "1": 
 		vz.visualize_fiedler(graph,sd.compute_isolines(fiedler_vector,nbins=100)[0],title=subject_name)
 	
-	
 	# 4. Skeleton 
 	coords = vsa.graph_to_coords(graph)
 	barycenters,intervals,coords, new_fiedler_vector = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=200,
-	irregular_bins=irregular_bins,add_extremity=True)
+	irregular_bins=irregular_bins)
 	if fig_to_display[2] == "1": 
 		fig, ax = vz.visualize_fiedler(graph,None,title=subject_name)
 		plt.gca().scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r')
 	plt.show()
 
-	# 5. Re-parametrization
-	
-	# Length
-	barycenters = np.vstack([coords[np.argmin(new_fiedler_vector),:],barycenters])
-	length = np.sqrt(np.sum((barycenters[1:,:] - barycenters[0:-1,:])**2,axis=1))
-	cum_length = np.cumsum(length)
-	cum_length = cum_length/cum_length[-1]
-	plt.plot(cum_length)
-	plt.show()
-	
-	# Reparam
-	reparam_fiedler = np.zeros((len(fiedler_vector),))
-	print(len(intervals),len(length), len(barycenters))
-	all_a = []
-	all_b = []
-	for i in range(len(length)-1):
-		indices = np.logical_and(new_fiedler_vector >= intervals[i],new_fiedler_vector <= intervals[i+1] )
-		a = (cum_length[i+1] - cum_length[i])/(intervals[i+1] - intervals[i])
-		b = cum_length[i] - a * intervals[i]
-		reparam_fiedler[indices] = a * new_fiedler_vector[indices] + b
-		all_a.append(a)
-		all_b.append(b)
-	
-	plt.plot(all_a)
-	plt.show()
-	for i in range(len(cum_length)-1):
-			x = intervals[i:i+2]
-			plt.plot(x, all_a[i]*x + all_b[i])
-			#plt.plot(i,all_a[i])
-	plt.show()
-	
-	vz.visualize_fiedler(graph,reparam_fiedler,title=subject_name)
-	plt.show()
 	# zeros_ls = np.logical_and(new_fiedler_vector >=-0.001,new_fiedler_vector<0.001)
 	# vz.visualize_fiedler(graph,zeros_ls,title=subject_name)
 	# plt.show()
 	#'''
-	# 6. Thickness profile
+	# 5. Thickness profile
 	if irregular_bins:
 		n_thickness=30
 	else:
 		n_thickness=50
-	thickness, slices, intervals = sd.compute_thickness(reparam_fiedler,coords,nbins=n_thickness)
+	thickness, slices, intervals = sd.compute_thickness(new_fiedler_vector,coords,nbins=n_thickness)
 	if fig_to_display[3] == "1": 
-		#vz.thickness_profile_isometric(thickness,cum_length,subject_name)
 		vz.thickness_profile(thickness,subject_name)
 	
 	if fig_to_display[4] == "1":
@@ -115,9 +83,9 @@ if __name__ =="__main__":
 				fig, ax = vz.visualize_fiedler(slices[i][0],slices[i][1],"",fig,ax)
 		vz.set_axes_equal(ax,coords)
 	
-	# 7. Thickness remapped on the image
+	# 6. Thickness remapped on the image
 	#print(len(intervals))
-	texture_remapped = sd.texture_mapping(reparam_fiedler, thickness[:,3], intervals)
+	texture_remapped = sd.texture_mapping(new_fiedler_vector, thickness[:,3], intervals)
 	print(thickness, intervals)
 	#texture_remapped = sd.texture_mapping(fiedler_vector, np.arange(0,19,1.), intervals)
 	if fig_to_display[4] == "1": 

@@ -24,7 +24,7 @@ if __name__ =="__main__":
 		irregular_bins = sys.argv[3]=="true"
 		
 	if len(fig_to_display)!= 5:
-		print("second parameter should be of the form abcde where a,b,c,d,e are 0 or 1 depending wether you want to display a. Fiedler vector b. Isolines c. Skeleton d. profile e. thickness")
+		print("second parameter should be of the form abcde where a,b,c,d,e are 0 or 1 depending wether you want to print a. Fiedler vector b. Isolines c. Skeleton d. profile e. thickness")
 	
 	# 1. Open the data
 	data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
@@ -51,7 +51,7 @@ if __name__ =="__main__":
 	
 	# 4. Skeleton 
 	coords = vsa.graph_to_coords(graph)
-	barycenters,intervals,coords, new_fiedler_vector = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=200,
+	barycenters,intervals,coords, new_fiedler_vector = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=100,
 	irregular_bins=irregular_bins,add_extremity=True)
 	if fig_to_display[2] == "1": 
 		fig, ax = vz.visualize_fiedler(graph,None,title=subject_name)
