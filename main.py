@@ -119,6 +119,3 @@ if __name__ =="__main__":
 		vz.visualize_fiedler(graph,texture_remapped,title = subject_name)
 	plt.show()
 	#'''
-	'''
-
-
