@@ -1,10 +1,8 @@
-import nibabel as nb
-import numpy as np
-import voxel_spectral_analysis as vsa
-import shape_description as sd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import networkx as nx
+import nibabel as nb
+import numpy as np
+import shape as sh
 import vizu as vz
 import sys
 
@@ -14,7 +12,7 @@ if __name__ =="__main__":
 	else:
 		name = sys.argv[1]
 	if len(sys.argv)<=2:
-		fig_to_display = "00011"
+		fig_to_display = "11111"
 	else:
 		fig_to_display = sys.argv[2]
 		
@@ -30,25 +28,23 @@ if __name__ =="__main__":
 	data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 	subject_name = "corpus_callosum_mask_26c_" + name
 	filename = data_folder + subject_name  +  ".nii.gz"
-	g = nb.load(filename)
-	mask = np.asanyarray(g.dataobj)
-	(x,y,z) = vsa.image_to_points(mask,g.header['pixdim'][1:4])
-
+	shape = sh.Shape(filename = filename,graph_type = "topolgy")
+	
 	# 2. Compute Fiedler vector	and extrema
-	graph = vsa.image_to_graph(mask,graph_type="geometry")
-	# print(graph.nodes)
-	diameter_fiedler, diameter, fiedler_vector = vsa.get_diameter_fiedler(graph)
+	shape.get_fiedler()
+	diameter, diameter_fiedler = shape.compute_diameter()
 	print("Diameter Fiedler = ", diameter_fiedler)
 	print("Diameter  = ",diameter)
 	
 	if fig_to_display[0] == "1": 
-		vz.visualize_fiedler(graph,fiedler_vector,title=subject_name)
+		vz.visualize_fiedler(shape.graph,shape.fiedler_vector,title=subject_name)
 	
+	'''	
 	# 3. Isolines
 	if fig_to_display[1] == "1": 
-		vz.visualize_fiedler(graph,sd.compute_isolines(fiedler_vector,nbins=100)[0],title=subject_name)
+		vz.visualize_fiedler(shapegraph,sd.compute_isolines(fiedler_vector,nbins=100)[0],title=subject_name)
 	
-	
+
 	# 4. Skeleton 
 	coords = vsa.graph_to_coords(graph)
 	barycenters,intervals,coords, new_fiedler_vector = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=200,
@@ -95,6 +91,7 @@ if __name__ =="__main__":
 	# vz.visualize_fiedler(graph,zeros_ls,title=subject_name)
 	# plt.show()
 	#'''
+	'''
 	# 6. Thickness profile
 	if irregular_bins:
 		n_thickness=30
@@ -122,6 +119,6 @@ if __name__ =="__main__":
 		vz.visualize_fiedler(graph,texture_remapped,title = subject_name)
 	plt.show()
 	#'''
-	
+	'''
 
 
