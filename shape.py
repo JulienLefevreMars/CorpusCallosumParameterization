@@ -9,6 +9,7 @@ Definition of a class to represent shapes as graphs + scalar field (Fiedler vect
 import networkx as nx
 import nibabel as nb
 import numpy as np
+import shape_description as sd
 import time
 
 def image_to_points(mask,voxel_size=[1,1,1]):
@@ -51,7 +52,7 @@ def add_valid_edge(g,inds,mask,graph_type="topology"):
 
 
 class Shape:
-	def __init__(self,filename=None,graph_type="geometry",**kwargs):
+	def __init__(self,filename=None,graph_type="geometry",nbins=100,**kwargs):
 		if not(filename is None):
 			g = nb.load(filename)
 			mask = np.asanyarray(g.dataobj)
@@ -60,6 +61,7 @@ class Shape:
 			self.is_empty = False
 			self.fiedler_vector = None
 			self.description = None # given by class shape_description
+			self.nbins = nbins
 		self.is_empty = True
 		
 	def get_fiedler(self):
@@ -81,3 +83,9 @@ class Shape:
 		diameter_fiedler = nx.dijkstra_path_length(self.graph,node_min,node_max,weight="geometry")
 		diameter = nx.diameter(self.graph)
 		return diameter, diameter_fiedler
+		
+	def add_description(self):
+		self.description = sd.ShapeDescription(fiedler_vector)
+		
+	def compute_isolines(self):
+		self.description.compute_isolines(nbins)

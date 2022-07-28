@@ -34,12 +34,13 @@ if __name__ =="__main__":
 	if fig_to_display[0] == "1": 
 		vz.visualize_fiedler(shape.graph,shape.fiedler_vector,title=subject_name)
 	plt.show()
-	'''	
-	# 3. Isolines
-	if fig_to_display[1] == "1": 
-		vz.visualize_fiedler(shapegraph,sd.compute_isolines(fiedler_vector,nbins=100)[0],title=subject_name)
-	
 
+	# 3. Isolines
+	shape.compute_isolines()
+	if fig_to_display[1] == "1": 
+		vz.visualize_fiedler(shape.graph,shape.description.isolines,title=subject_name)
+	
+	'''	
 	# 4. Skeleton 
 	coords = vsa.graph_to_coords(graph)
 	barycenters,intervals,coords, new_fiedler_vector = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=200,
