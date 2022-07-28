@@ -27,6 +27,7 @@ if __name__ =="__main__":
 	
 	# 2. Compute Fiedler vector	and extrema
 	shape.get_fiedler()
+	shape.add_description()
 	#diameter, diameter_fiedler = shape.compute_diameter()
 	#print("Diameter Fiedler = ", diameter_fiedler)
 	#print("Diameter  = ",diameter)
@@ -36,9 +37,10 @@ if __name__ =="__main__":
 	plt.show()
 
 	# 3. Isolines
-	shape.compute_isolines()
+	shape.compute_isolines(nbins=100)
 	if fig_to_display[1] == "1": 
 		vz.visualize_fiedler(shape.graph,shape.description.isolines,title=subject_name)
+	plt.show()
 	
 	'''	
 	# 4. Skeleton 

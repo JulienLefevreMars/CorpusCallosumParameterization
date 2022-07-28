@@ -60,7 +60,7 @@ class Shape:
 			self.graph = image_to_graph(mask,graph_type=graph_type)
 			self.is_empty = False
 			self.fiedler_vector = None
-			self.description = None # given by class shape_description
+			self.description = sd.ShapeDescription(None) # given by class shape_description
 			self.nbins = nbins
 		self.is_empty = True
 		
@@ -85,7 +85,7 @@ class Shape:
 		return diameter, diameter_fiedler
 		
 	def add_description(self):
-		self.description = sd.ShapeDescription(fiedler_vector)
+		self.description = sd.ShapeDescription(self.fiedler_vector)
 		
-	def compute_isolines(self):
+	def compute_isolines(self,nbins=100):
 		self.description.compute_isolines(nbins)
