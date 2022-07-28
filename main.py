@@ -16,11 +16,6 @@ if __name__ =="__main__":
 	else:
 		fig_to_display = sys.argv[2]
 		
-	if len(sys.argv)<=3:
-		irregular_bins = False
-	else:
-		irregular_bins = sys.argv[3]=="true"
-		
 	if len(fig_to_display)!= 5:
 		print("second parameter should be of the form abcde where a,b,c,d,e are 0 or 1 depending wether you want to display a. Fiedler vector b. Isolines c. Skeleton d. profile e. thickness")
 	

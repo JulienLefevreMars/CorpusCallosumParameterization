@@ -1,5 +1,5 @@
 """"
-Definition of a shape class
+Definition of a class to represent shapes as graphs + scalar field (Fiedler vectors) + description of this field
 
 
 """
@@ -59,6 +59,7 @@ class Shape:
 			self.graph = image_to_graph(mask,graph_type=graph_type)
 			self.is_empty = False
 			self.fiedler_vector = None
+			self.description = None # given by class shape_description
 		self.is_empty = True
 		
 	def get_fiedler(self):
