@@ -32,13 +32,13 @@ if __name__ =="__main__":
 	
 	# 2. Compute Fiedler vector	and extrema
 	shape.get_fiedler()
-	diameter, diameter_fiedler = shape.compute_diameter()
-	print("Diameter Fiedler = ", diameter_fiedler)
-	print("Diameter  = ",diameter)
+	#diameter, diameter_fiedler = shape.compute_diameter()
+	#print("Diameter Fiedler = ", diameter_fiedler)
+	#print("Diameter  = ",diameter)
 	
 	if fig_to_display[0] == "1": 
 		vz.visualize_fiedler(shape.graph,shape.fiedler_vector,title=subject_name)
-	
+	plt.show()
 	'''	
 	# 3. Isolines
 	if fig_to_display[1] == "1": 

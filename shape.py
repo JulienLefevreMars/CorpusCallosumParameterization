@@ -64,19 +64,19 @@ class Shape:
 	def get_fiedler(self):
 		self.fiedler_vector = nx.fiedler_vector(self.graph)
 	
-	def graph_to_coords(graph):
-		n = len(graph.nodes)
+	def graph_to_coords(self):
+		n = len(self.graph.nodes)
 		coords_nodes = []# np.zeros((n,),dtype=int)
-		for i,node in enumerate(graph.nodes):
+		for i,node in enumerate(self.graph.nodes):
 			coords_nodes.append(node)
 		return coords_nodes
 	
 	def compute_diameter(self):
 		i_min = np.argmin(self.fiedler_vector)
 		i_max = np.argmax(self.fiedler_vector)
-		coords = self.graph_to_coords(self.graph) 
+		coords = self.graph_to_coords() 
 		node_min = coords[i_min]
 		node_max = coords[i_max]
-		diameter_fiedler = nx.dijkstra_path_length(graph,node_min,node_max,weight="geometry")
-		diameter = nx.diameter(graph)
+		diameter_fiedler = nx.dijkstra_path_length(self.graph,node_min,node_max,weight="geometry")
+		diameter = nx.diameter(self.graph)
 		return diameter, diameter_fiedler

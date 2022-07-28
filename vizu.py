@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-import voxel_spectral_analysis as vsa
 
 def set_axes_equal(ax,coords=None):
 	'''Make axes of 3D plot have equal scale so that spheres appear as spheres,
@@ -38,7 +37,7 @@ def set_axes_equal(ax,coords=None):
 	ax.set_ylim3d([y_middle - plot_radius, y_middle + plot_radius])
 	ax.set_zlim3d([z_middle - plot_radius, z_middle + plot_radius])
 
-
+'''
 def visualize_mask(gifti_image):
 	mask = np.asanyarray(gifti_image.dataobj)
 	(x,y,z) = vsa.image_to_points(mask,gifti_image.header['pixdim'][1:4])
@@ -48,6 +47,7 @@ def visualize_mask(gifti_image):
 	ax.scatter(x,y,z)
 	set_axes_equal(ax)
 	#plt.show()
+'''
 	
 def visualize_fiedler_extrema(coords,fiedler_vector,ax):
 	ind_min = np.argmin(fiedler_vector)
