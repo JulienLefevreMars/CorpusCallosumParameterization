@@ -32,17 +32,19 @@ class ShapeDescription:
 		for i in range(0,len(self.intervals)-1,2):
 			self.isolines[np.logical_and(self.texture >=self.intervals[i],self.texture<self.intervals[i+1])] = i
 		
-	def compute_skeleton(self,nbins=100,irregular_bins=False,add_extremity=False):	
+	def compute_skeleton(self,add_extremity=False):	
 		'''
 		Provides barycenters/skeleton of a shape by using isolines of the texture
 		'''
-		coords_nodes = sh.graph_to_coords(self.shape.graph)
+		nbins = len(self.intervals)
+		coords_nodes = self.shape.graph_to_coords()
 		coords = np.zeros((len(coords_nodes),3),dtype=int)
 		for i in range(len(coords)):
 			coords[i,:] = coords_nodes[i]
 		barycenters = np.zeros((nbins-1,3))
 		for i in range(0,nbins-1):
-			barycenters[i,:] = np.mean(coords[np.logical_and(new_fiedler_vector>=bins[i],new_fiedler_vector<bins[i+1])],axis=0)
+			barycenters[i,:] = np.mean(coords[np.logical_and(self.texture>=self.intervals[i],self.texture<self.intervals[i+1])],axis=0)
 		if add_extremity:
-			barycenters = np.vstack([coords[np.argmin(fiedler_vector),:],barycenters])
+			barycenters = np.vstack([coords[np.argmin(self.texture),:],barycenters])
+			barycenters = np.vstack([barycenters,coords[np.argmax(self.texture),:]])
 		return barycenters
