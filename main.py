@@ -23,11 +23,11 @@ if __name__ =="__main__":
 	data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 	subject_name = "corpus_callosum_mask_26c_" + name
 	filename = data_folder + subject_name  +  ".nii.gz"
-	shape = sh.Shape(filename = filename,graph_type = "topolgy")
+	shape = sh.Shape(filename = filename,graph_type = "topolgy",nbins=50)
 	
 	# 2. Compute Fiedler vector	and extrema
 	shape.get_fiedler()
-	shape.add_description()
+	shape.add_description(nbins=50)
 	#diameter, diameter_fiedler = shape.compute_diameter()
 	#print("Diameter Fiedler = ", diameter_fiedler)
 	#print("Diameter  = ",diameter)
@@ -37,19 +37,29 @@ if __name__ =="__main__":
 	plt.show()
 
 	# 3. Isolines
-	shape.compute_isolines(nbins=100)
+	shape.compute_isolines()
 	if fig_to_display[1] == "1": 
 		vz.visualize_fiedler(shape.graph,shape.description.isolines,title=subject_name)
 	plt.show()
 	
 
 	# 4. Skeleton 
-	barycenters = shape.description.compute_skeleton(add_extremity = True)
+	shape.description.compute_skeleton(add_extremity = True)
+	barycenters = shape.description.barycenters
 	print(barycenters)
 	if fig_to_display[2] == "1": 
 		fig, ax = vz.visualize_fiedler(shape.graph,None,title=subject_name)
 		ax.scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r',s=100,marker='o')
 	plt.show()
+	
+	shape.description.reparameterize_texture()
+	if fig_to_display[3] == "1":
+		fig,ax = vz.visualize_fiedler(shape.graph,shape.description.texture,title=subject_name)
+		shape.description.compute_skeleton(add_extremity = True)
+		barycenters = shape.description.barycenters
+		print(barycenters)
+		ax.scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r',s=100,marker='o')
+		plt.show()
 	'''	
 	# 5. Re-parametrization
 	

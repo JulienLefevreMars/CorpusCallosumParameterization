@@ -51,7 +51,7 @@ def add_valid_edge(g,inds,mask,graph_type="topology"):
 					g.add_edge(inds,(x+i,y+j,z+k),weight=weight)
 
 class Shape:
-	def __init__(self,filename=None,graph_type="geometry",nbins=100,**kwargs):
+	def __init__(self,filename=None,graph_type="geometry",**kwargs):
 		if not(filename is None):
 			g = nb.load(filename)
 			mask = np.asanyarray(g.dataobj)
@@ -60,7 +60,6 @@ class Shape:
 			self.is_empty = False
 			self.fiedler_vector = None
 			self.description = sd.ShapeDescription(None) # given by class shape_description
-			self.nbins = nbins
 		self.is_empty = True
 		
 	def get_fiedler(self):
@@ -83,9 +82,9 @@ class Shape:
 		diameter = nx.diameter(self.graph)
 		return diameter, diameter_fiedler
 		
-	def add_description(self):
-		self.description = sd.ShapeDescription(self.fiedler_vector,self)
+	def add_description(self,nbins=100):
+		self.description = sd.ShapeDescription(self.fiedler_vector,self,nbins=nbins)
 		
-	def compute_isolines(self,nbins=100):
-		self.description.compute_isolines(nbins)
+	def compute_isolines(self):
+		self.description.compute_isolines()
 		
