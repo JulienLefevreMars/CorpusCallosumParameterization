@@ -8,7 +8,7 @@ import copy
 import matplotlib.pyplot as plt
 import numpy as np
 import shape as sh
-#import sklearn.decomposition as sd
+import sklearn.decomposition as sd
 
 
 # Author: Julien Lefevre, PhD, julien.lefevre@univ-amu.fr
@@ -26,6 +26,8 @@ class ShapeDescription:
 		self.intervals = None
 		self.barycenters = None
 		self.nbins = nbins
+		self.coords = None
+		self.cum_length = None
 		
 	def compute_isolines(self):
 		vmin = np.min(self.texture)
@@ -44,6 +46,7 @@ class ShapeDescription:
 		coords = np.zeros((len(coords_nodes),3),dtype=int)
 		for i in range(len(coords)):
 			coords[i,:] = coords_nodes[i]
+		self.coords = coords
 		barycenters = np.zeros((nbins-1,3))
 		for i in range(0,nbins-1):
 			barycenters[i,:] = np.mean(coords[np.logical_and(self.texture>=self.intervals[i],self.texture<self.intervals[i+1])],axis=0)
@@ -69,25 +72,80 @@ class ShapeDescription:
 			reparam_fiedler[indices] = a * self.texture[indices] + b
 		self.texture = reparam_fiedler
 		self.compute_isolines()
+		self.compute_skeleton(add_extremity=True)
+		self.cum_length = cum_length
+
+	def compute_thickness(self):
+		thickness = np.zeros((len(self.nbins)-1,4))
+		slices = []
+		for i in range(0,len(self.nbins)-1):
+			print(i)
+			# 1. Skeletonization
+			indices = np.logical_and(self.texture >=self.intervals[i],self.texture<=self.intervals[i+1])
+			# warning, if <bins[i+1] indices is empty for i = len(bins)-1 because of histogram equalization that puts a lot of values on vmax
+			slice_points = self.coords[indices]
+			barycenters[i,:] = np.mean(slice_points,axis=0)
+			thickness[i,0] = 3*np.std(distance(barycenters[i,:], coords[indices,:]))
+			thickness[i,1] = np.max(distance(barycenters[i,:], coords[indices,:]))
+			# 2. Convert a slice in a graph
+			slice_graph = sh.points_to_graph(slice_points,graph_type="geometry")
+			#print(slice_graph)
+			try:
+				res = sh.get_diameter_fiedler(slice_graph)
+			except NetworkXError:
+				print("Problem with networkx")
+				res = [-1,-1,-1]
+			#print(res)
+			thickness[i,2] = res[0]
+			slices.append([slice_graph,res[2]])
+			# 3. PCA
+			pca = sd.PCA(n_components=2)
+			pca.fit(slice_points)
+			projection = pca.transform(slice_points)
+			thickness[i,3] = np.max(projection) - np.min(projection)
+		return thickness, slices, bins
 	'''
-		# Length
-	barycenters = np.vstack([coords[np.argmin(new_fiedler_vector),:],barycenters])
-	length = np.sqrt(np.sum((barycenters[1:,:] - barycenters[0:-1,:])**2,axis=1))
-	cum_length = np.cumsum(length)
-	cum_length = cum_length/cum_length[-1]
-	plt.plot(cum_length)
-	plt.show()
+	def compute_thickness(fiedler_vector,coords,nbins=100):
+	# compute cortical thickness by using on each slice the Fiedler distance of the resulting graph
+	barycenters, bins, coords, fiedler_vector = compute_longitudinal_description(fiedler_vector, coords, nbins)
+	print(bins)
+	print("Min, max Fiedler",np.min(fiedler_vector),np.max(fiedler_vector))
+	thickness = np.zeros((len(bins)-1,4))
+	slices = []
+	for i in range(0,len(bins)-1):
+		print(i,bins[i],bins[i+1], np.sum(np.logical_and(fiedler_vector >=bins[i],fiedler_vector<=bins[i+1])))
+
 	
-	# Reparam
-	reparam_fiedler = np.zeros((len(fiedler_vector),))
-	print(len(intervals),len(length), len(barycenters))
-	all_a = []
-	all_b = []
-	for i in range(len(length)-1):
-		indices = np.logical_and(new_fiedler_vector >= intervals[i],new_fiedler_vector <= intervals[i+1] )
-		a = (cum_length[i+1] - cum_length[i])/(intervals[i+1] - intervals[i])
-		b = cum_length[i] - a * intervals[i]
-		reparam_fiedler[indices] = a * new_fiedler_vector[indices] + b
-		all_a.append(a)
-		all_b.append(b)
-		'''
+	for i in range(0,len(bins)-1):
+		print(i)
+		# 1. Skeletonization
+		indices = np.logical_and(fiedler_vector >=bins[i],fiedler_vector<=bins[i+1])
+		# warning, if <bins[i+1] indices is empty for i = len(bins)-1 because of histogram equalization that puts a lot of values on vmax
+		slice_points = coords[indices]
+		barycenters[i,:] = np.mean(slice_points,axis=0)
+		thickness[i,0] = 3*np.std(distance(barycenters[i,:], coords[indices,:]))
+		thickness[i,1] = np.max(distance(barycenters[i,:], coords[indices,:]))
+		# 2. Convert a slice in a graph
+		slice_graph = vsa.points_to_graph(slice_points,graph_type="geometry")
+		#print(slice_graph)
+		try:
+			res = vsa.get_diameter_fiedler(slice_graph)
+		except NetworkXError:
+			print("Problem with networkx")
+			res = [-1,-1,-1]
+		#print(res)
+		thickness[i,2] = res[0]
+		slices.append([slice_graph,res[2]])
+		# 3. PCA
+		pca = sd.PCA(n_components=2)
+		pca.fit(slice_points)
+		projection = pca.transform(slice_points)
+		thickness[i,3] = np.max(projection) - np.min(projection)
+		if i==9:
+			plt.plot(coords[:,1],coords[:,2],'+r')
+			plt.plot(slice_points[:,1],slice_points[:,2],'+')
+			plt.show()
+			
+		print(thickness[i,:])
+	return thickness, slices, bins
+	'''
