@@ -37,21 +37,20 @@ if __name__ =="__main__":
 	plt.show()
 
 	# 3. Isolines
-	shape.compute_isolines(nbins=100)
+	shape.compute_isolines(nbins=50)
 	if fig_to_display[1] == "1": 
 		vz.visualize_fiedler(shape.graph,shape.description.isolines,title=subject_name)
 	plt.show()
 	
-	'''	
+
 	# 4. Skeleton 
 	coords = vsa.graph_to_coords(graph)
-	barycenters,intervals,coords, new_fiedler_vector = sd.compute_longitudinal_description(fiedler_vector,coords,nbins=200,
-	irregular_bins=irregular_bins,add_extremity=True)
+	barycenters = shape.description.compute_skeleton(nbins=200,irregular_bins=False)
 	if fig_to_display[2] == "1": 
-		fig, ax = vz.visualize_fiedler(graph,None,title=subject_name)
+		fig, ax = vz.visualize_fiedler(shape.graph,None,title=subject_name)
 		plt.gca().scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r')
 	plt.show()
-
+	'''	
 	# 5. Re-parametrization
 	
 	# Length

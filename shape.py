@@ -50,7 +50,6 @@ def add_valid_edge(g,inds,mask,graph_type="topology"):
 						#print(weight)
 					g.add_edge(inds,(x+i,y+j,z+k),weight=weight)
 
-
 class Shape:
 	def __init__(self,filename=None,graph_type="geometry",nbins=100,**kwargs):
 		if not(filename is None):
@@ -85,7 +84,8 @@ class Shape:
 		return diameter, diameter_fiedler
 		
 	def add_description(self):
-		self.description = sd.ShapeDescription(self.fiedler_vector)
+		self.description = sd.ShapeDescription(self.fiedler_vector,self)
 		
 	def compute_isolines(self,nbins=100):
 		self.description.compute_isolines(nbins)
+		
