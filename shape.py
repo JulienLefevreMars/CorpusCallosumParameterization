@@ -86,7 +86,12 @@ class Shape:
 		
 	def get_fiedler(self):
 		self.fiedler_vector = nx.fiedler_vector(self.graph)
-	
+		i_min = np.argmin(self.fiedler_vector)
+		i_max = np.argmax(self.fiedler_vector)
+		coords = self.graph_to_coords()
+		if coords[i_min][1]>coords[i_max][1]: # y coordinate is approximately aligne with Fiedler vector, but BE CAREFUL, could change depending on the way the MRI acquisition is done
+			self.fiedler_vector = - self.fiedler_vector
+		
 	def graph_to_coords(self):
 		n = len(self.graph.nodes)
 		coords_nodes = []# np.zeros((n,),dtype=int)

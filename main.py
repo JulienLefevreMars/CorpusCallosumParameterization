@@ -24,6 +24,7 @@ if __name__ =="__main__":
 	subject_name = "corpus_callosum_mask_26c_" + name
 	filename = data_folder + subject_name  +  ".nii.gz"
 	shape = sh.Shape(filename = filename,graph_type = "topolgy",nbins=50)
+	#print(shape.graph_to_coords())
 	
 	# 2. Compute Fiedler vector	and extrema
 	shape.get_fiedler()
