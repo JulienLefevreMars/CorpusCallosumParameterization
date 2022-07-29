@@ -69,7 +69,7 @@ if __name__ =="__main__":
 
 
 	# 6. Thickness profile
-	thickness, slices, intervals = shape.descriptions.compute_thickness()
+	thickness = shape.description.compute_thickness()
 	if fig_to_display[3] == "1": 
 		#vz.thickness_profile_isometric(thickness,cum_length,subject_name)
 		vz.thickness_profile(thickness,subject_name)

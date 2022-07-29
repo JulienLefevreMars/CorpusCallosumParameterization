@@ -12,6 +12,24 @@ import numpy as np
 import shape_description as sd
 import time
 
+def is_neighbour(p,q):
+	# Test 26 connexity for p and q: sup norm
+	return np.max(np.abs(p-q))==1
+	
+
+def points_to_graph(points,graph_type="topology"):
+	g = nx.Graph()
+	weight = 1 # TO DO: to be adapted
+	sigma = 0.5
+	for i in range(len(points)):
+		for j in range(len(points)):
+			if is_neighbour(points[i,:],points[j,:]):
+				if graph_type=="geometry":
+					weight = np.exp(-np.sum((points[i,:]-points[j,:])**2)/sigma**2)
+					#print(weight)
+				g.add_edge(tuple(points[i,:]),tuple(points[j,:]),weight = weight)
+	return g
+
 def image_to_points(mask,voxel_size=[1,1,1]):
 	""" 
 	Create 3D points from a mask of voxels
@@ -51,16 +69,20 @@ def add_valid_edge(g,inds,mask,graph_type="topology"):
 					g.add_edge(inds,(x+i,y+j,z+k),weight=weight)
 
 class Shape:
-	def __init__(self,filename=None,graph_type="geometry",**kwargs):
+	def __init__(self,filename=None,graph=None,graph_type="geometry",**kwargs):
 		if not(filename is None):
 			g = nb.load(filename)
 			mask = np.asanyarray(g.dataobj)
 			self.coords_triplet = image_to_points(mask,g.header['pixdim'][1:4])
 			self.graph = image_to_graph(mask,graph_type=graph_type)
 			self.is_empty = False
-			self.fiedler_vector = None
-			self.description = sd.ShapeDescription(None) # given by class shape_description
-		self.is_empty = True
+		elif not(graph is None):
+			self.graph = graph
+			self.coords_triplet = None
+		else:
+			self.is_empty = True
+		self.fiedler_vector = None
+		self.description = sd.ShapeDescription(None) # given by class shape_description
 		
 	def get_fiedler(self):
 		self.fiedler_vector = nx.fiedler_vector(self.graph)

@@ -13,6 +13,10 @@ import sklearn.decomposition as sd
 
 # Author: Julien Lefevre, PhD, julien.lefevre@univ-amu.fr
 
+def distance(p,points):
+	return np.sqrt((points[:,0]-p[0])**2 + (points[:,1]-p[1])**2 + (points[:,2]-p[2])**2)
+
+
 class ShapeDescription:
 	def __init__(self,texture,shape=None,nbins=100,**kwargs):
 		if texture is None:
@@ -76,34 +80,35 @@ class ShapeDescription:
 		self.cum_length = cum_length
 
 	def compute_thickness(self):
-		thickness = np.zeros((len(self.nbins)-1,4))
-		slices = []
-		for i in range(0,len(self.nbins)-1):
+		nbins = len(self.intervals)
+		thickness = np.zeros((nbins-1,4))
+		barycenters = np.zeros((nbins-1,3))
+		for i in range(0,len(self.intervals)-1):
 			print(i)
-			# 1. Skeletonization
+			# 1. Skeletonization => # Could be refactored with compute_skeleton
 			indices = np.logical_and(self.texture >=self.intervals[i],self.texture<=self.intervals[i+1])
 			# warning, if <bins[i+1] indices is empty for i = len(bins)-1 because of histogram equalization that puts a lot of values on vmax
 			slice_points = self.coords[indices]
 			barycenters[i,:] = np.mean(slice_points,axis=0)
-			thickness[i,0] = 3*np.std(distance(barycenters[i,:], coords[indices,:]))
-			thickness[i,1] = np.max(distance(barycenters[i,:], coords[indices,:]))
+			thickness[i,0] = 3*np.std(distance(barycenters[i,:], self.coords[indices,:]))
+			thickness[i,1] = np.max(distance(barycenters[i,:], self.coords[indices,:]))
 			# 2. Convert a slice in a graph
 			slice_graph = sh.points_to_graph(slice_points,graph_type="geometry")
 			#print(slice_graph)
 			try:
-				res = sh.get_diameter_fiedler(slice_graph)
-			except NetworkXError:
+				shape = sh.Shape(filename=None,graph = slice_graph)
+				res = shape.compute_diameter()
+			except :
 				print("Problem with networkx")
-				res = [-1,-1,-1]
+				res = [np.nan,np.nan]
 			#print(res)
 			thickness[i,2] = res[0]
-			slices.append([slice_graph,res[2]])
 			# 3. PCA
 			pca = sd.PCA(n_components=2)
 			pca.fit(slice_points)
 			projection = pca.transform(slice_points)
 			thickness[i,3] = np.max(projection) - np.min(projection)
-		return thickness, slices, bins
+		return thickness
 	'''
 	def compute_thickness(fiedler_vector,coords,nbins=100):
 	# compute cortical thickness by using on each slice the Fiedler distance of the resulting graph
