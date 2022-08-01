@@ -79,9 +79,12 @@ class ShapeDescription:
 		self.compute_skeleton(add_extremity=True)
 		self.cum_length = cum_length
 
-	def compute_thickness(self):
+	def compute_thickness(self,use_fiedler=False):
 		nbins = len(self.intervals)
-		thickness = np.zeros((nbins-1,4))
+		nb_methods = 3
+		if use_fiedler:
+			nb_methods = 4
+		thickness = np.zeros((nbins-1,nb_methods))
 		barycenters = np.zeros((nbins-1,3))
 		for i in range(0,len(self.intervals)-1):
 			print(i)
@@ -92,27 +95,34 @@ class ShapeDescription:
 			barycenters[i,:] = np.mean(slice_points,axis=0)
 			thickness[i,0] = 3*np.std(distance(barycenters[i,:], self.coords[indices,:]))
 			thickness[i,1] = np.max(distance(barycenters[i,:], self.coords[indices,:]))
-			# 2. Convert a slice in a graph
-			slice_graph = sh.points_to_graph(slice_points,graph_type="geometry")
-			#print(slice_graph)
-			try:
-				shape = sh.Shape(filename=None,graph = slice_graph)
-				res = shape.compute_diameter()
-			except :
-				print("Problem with networkx")
-				res = [np.nan,np.nan]
-			#print(res)
-			thickness[i,2] = res[0]
-			# 3. PCA
+			# 2. PCA
 			pca = sd.PCA(n_components=2)
 			pca.fit(slice_points)
 			projection = pca.transform(slice_points)
-			thickness[i,3] = np.max(projection) - np.min(projection)
+			thickness[i,2] = np.max(projection) - np.min(projection)
+			# 3. Convert a slice in a graph and get Fiedler diameter
+			if use_fiedler:
+				slice_graph = sh.points_to_graph(slice_points,graph_type="geometry")
+				#print(slice_graph)
+				try:
+					shape = sh.Shape(filename=None,graph = slice_graph)
+					res = shape.compute_diameter()
+				except :
+					print("Problem with networkx")
+					res = [np.nan,np.nan]
+				thickness[i,3] = res[0]
 		return thickness
 		
 	def texture_mapping(self,thickness):
 		texture_mapped = np.zeros((len(self.texture),))
 		for i in range(0,len(thickness)):
 			indices = np.logical_and(self.texture >=self.intervals[i],self.texture<=self.intervals[i+1])
-		texture_mapped[indices] = thickness[i]
+			texture_mapped[indices] = thickness[i]
 		return texture_mapped
+		
+	def curv_abs(self):
+		n_bar = len(self.barycenters)
+		length = np.zeros((n_bar-1,))
+		for i in range(n_bar-1):
+			length[i] = distance(self.barycenters[i+1,:],self.barycenters[i:i+1,:])
+		return length
