@@ -12,6 +12,33 @@ nbins = 75 # number of bins to obtain slices of Fiedler vector
 graph_type = "topology" # "geometry" # or 
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 
+def analyse_profiles(abs_curv=True):
+	# Process .csv files
+	dir_list = os.listdir(data_folder)
+	nb_subj = 0
+	data_subjects = []
+	data_names = []
+	for filename in dir_list:
+		pos = filename.find("_thickness")
+		if filename[-3::]=="csv" and not(filename[pos-3:pos]=="612"):
+			data = np.loadtxt(data_folder + filename,delimiter=",")
+			nb_subj +=1
+			data_subjects.append(data)
+			data_names.append(filename[pos-3:pos])
+	for i in range(nb_subj):
+		data = data_subjects[i]
+		if abs_curv:
+			xvalues = data[:,0]
+			xlabel = "Skeleton length"
+		else:
+			xvalues = np.arange(len(data[:,0]))
+			xlabel = "Incremental indexing"
+		plt.plot(xvalues,data[:,1])
+	plt.legend(data_names)
+	plt.xlabel(xlabel)
+	plt.ylabel("Thickness (a.u.)")
+	plt.show()
+
 def save_profiles(thickness,shape,filename):
 	length = shape.description.curv_abs()
 	n = len(length)-1
@@ -101,19 +128,7 @@ def process_subject(name,fig_to_display):
 
 if __name__ =="__main__":
 	if len(sys.argv)==1:
-		# Process .csv files
-		dir_list = os.listdir(data_folder)
-		nb_subj = 0
-		data_subjects = []
-		for filename in dir_list:
-			if filename[-3::]=="csv":
-				data = np.loadtxt(data_folder + filename,delimiter=",")
-				nb_subj +=1
-				data_subjects.append(data)
-		for i in range(nb_subj):
-			data = data_subjects[i]
-			plt.plot(data[:,0],data[:,1])
-		plt.show()
+		analyse_profiles()
 	else:
 		# Process one subject
 		name = sys.argv[1]
