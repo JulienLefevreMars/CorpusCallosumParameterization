@@ -5,10 +5,12 @@ import numpy as np
 import os
 import shape as sh
 import vizu as vz
+import scipy.ndimage as sp
 import sys
 
 use_fiedler = False # use Fiedler diameter to compute thickness
-nbins = 150 # number of bins to obtain slices of Fiedler vector
+nbins = 75 # number of bins to obtain slices of Fiedler vector
+sigma_smooth = 2. # size of window to smooth the thickness curves (not in .csv files)
 graph_type = "topology" # "geometry" # or 
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 
@@ -20,7 +22,7 @@ def analyse_profiles(abs_curv=True):
 	data_names = []
 	for filename in dir_list:
 		pos = filename.find("_thickness")
-		if filename[-3::]=="csv": #and not(filename[pos-3:pos]=="612"):
+		if filename[-3::]=="csv" and not(filename[pos-3:pos]=="612"):
 			data = np.loadtxt(data_folder + filename,delimiter=",")
 			nb_subj +=1
 			data_subjects.append(data)
@@ -33,7 +35,7 @@ def analyse_profiles(abs_curv=True):
 		else:
 			xvalues = np.arange(len(data[:,0]))
 			xlabel = "Incremental indexing"
-		plt.plot(xvalues,data[:,1])
+		plt.plot(xvalues,sp.gaussian_filter1d(data[:,1],sigma = sigma_smooth))
 	plt.legend(data_names)
 	plt.xlabel(xlabel)
 	plt.ylabel("Thickness (a.u.)")
