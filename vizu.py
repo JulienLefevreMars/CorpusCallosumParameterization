@@ -56,18 +56,19 @@ def visualize_fiedler_extrema(coords,fiedler_vector,ax):
 	ax.scatter(coords[ind_max,0],coords[ind_max,1],coords[ind_max,2],c="y",s=100)
 	
 	
-def visualize_fiedler(graph,fiedler_vector=None,title="",fig=None,ax=None):
+def visualize_fiedler(graph,fiedler_vector=None,title="",fig=None,ax=None,extrema=False):
 	n = len(graph.nodes)
 	coords = np.zeros((n,3))
 	for i,node in enumerate(graph.nodes):
 		coords[i,:] = node
 	if fig is None:
-		fig = plt.figure()
+		fig = plt.figure(figsize=(15,9))
 	#ax = fig.add_subplot(111, projection='3d')
 		ax = plt.axes(projection="3d")
 	#ax.set_box_aspect((1,1,1))
 	ax.scatter(coords[:,0],coords[:,1],coords[:,2],c=fiedler_vector,cmap="jet",s=2)
-	if not(fiedler_vector is None):
+	ax.view_init(30,0)
+	if extrema:
 		visualize_fiedler_extrema(coords,fiedler_vector,ax)
 	plt.title(title)
 	set_axes_equal(ax)

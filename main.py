@@ -28,13 +28,13 @@ if __name__ =="__main__":
 	
 	# 2. Compute Fiedler vector	and extrema
 	shape.get_fiedler()
-	shape.add_description(nbins=50)
+	shape.add_description(nbins=75)
 	#diameter, diameter_fiedler = shape.compute_diameter()
 	#print("Diameter Fiedler = ", diameter_fiedler)
 	#print("Diameter  = ",diameter)
 	
 	if fig_to_display[0] == "1": 
-		vz.visualize_fiedler(shape.graph,shape.fiedler_vector,title=subject_name)
+		vz.visualize_fiedler(shape.graph,shape.fiedler_vector,title=subject_name,extrema=True)
 	plt.show()
 
 	# 3. Isolines
@@ -74,30 +74,11 @@ if __name__ =="__main__":
 	if fig_to_display[3] == "1": 
 		#vz.thickness_profile_isometric(thickness,cum_length,subject_name)
 		vz.thickness_profile(thickness,subject_name)
-	'''
-	if irregular_bins:
-		n_thickness=30
-	else:
-		n_thickness=50
-	thickness, slices, intervals = sd.compute_thickness(reparam_fiedler,coords,nbins=n_thickness)
-	if fig_to_display[3] == "1": 
-		#vz.thickness_profile_isometric(thickness,cum_length,subject_name)
-		vz.thickness_profile(thickness,subject_name)
-	
-	if fig_to_display[4] == "1":
-		for i in range(len(slices)):
-			if i==0:
-				fig, ax = vz.visualize_fiedler(slices[i][0],slices[i][1])
-			else:
-				fig, ax = vz.visualize_fiedler(slices[i][0],slices[i][1],"",fig,ax)
-		vz.set_axes_equal(ax,coords)
-	
+
 	# 7. Thickness remapped on the image
 	#print(len(intervals))
-	texture_remapped = sd.texture_mapping(reparam_fiedler, thickness[:,3], intervals)
-	print(thickness, intervals)
-	#texture_remapped = sd.texture_mapping(fiedler_vector, np.arange(0,19,1.), intervals)
+	texture_remapped = shape.description.texture_mapping()
 	if fig_to_display[4] == "1": 
-		vz.visualize_fiedler(graph,texture_remapped,title = subject_name)
+		vz.visualize_fiedler(shape.graph,texture_remapped,title = subject_name)
 	plt.show()
-	#'''
+

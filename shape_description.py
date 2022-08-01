@@ -109,3 +109,10 @@ class ShapeDescription:
 			projection = pca.transform(slice_points)
 			thickness[i,3] = np.max(projection) - np.min(projection)
 		return thickness
+		
+	def texture_mapping(self,thickness):
+		texture_mapped = np.zeros((len(self.texture),))
+		for i in range(0,len(thickness)):
+			indices = np.logical_and(self.texture >=self.intervals[i],self.texture<=self.intervals[i+1])
+		texture_mapped[indices] = thickness[i]
+		return texture_mapped
