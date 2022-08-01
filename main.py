@@ -8,7 +8,7 @@ import vizu as vz
 import sys
 
 use_fiedler = False # use Fiedler diameter to compute thickness
-nbins = 75 # number of bins to obtain slices of Fiedler vector
+nbins = 150 # number of bins to obtain slices of Fiedler vector
 graph_type = "topology" # "geometry" # or 
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 
@@ -20,7 +20,7 @@ def analyse_profiles(abs_curv=True):
 	data_names = []
 	for filename in dir_list:
 		pos = filename.find("_thickness")
-		if filename[-3::]=="csv" and not(filename[pos-3:pos]=="612"):
+		if filename[-3::]=="csv": #and not(filename[pos-3:pos]=="612"):
 			data = np.loadtxt(data_folder + filename,delimiter=",")
 			nb_subj +=1
 			data_subjects.append(data)
@@ -128,7 +128,7 @@ def process_subject(name,fig_to_display):
 
 if __name__ =="__main__":
 	if len(sys.argv)==1:
-		analyse_profiles()
+		analyse_profiles(True) # True: skeleton length in x
 	else:
 		# Process one subject
 		name = sys.argv[1]
