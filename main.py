@@ -7,14 +7,15 @@ import shape as sh
 import vizu as vz
 import scipy.ndimage as sp
 import sys
+import analyze_curve as ac
 
 use_fiedler = False # use Fiedler diameter to compute thickness
 nbins = 75 # number of bins to obtain slices of Fiedler vector
-sigma_smooth = 2. # size of window to smooth the thickness curves (not in .csv files)
+ # size of window to smooth the thickness curves (not in .csv files)
 graph_type = "topology" # "geometry" # or 
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 
-def analyse_profiles(abs_curv=True):
+def analyse_profiles(abs_curv=True,sigma_smooth = 0.001):
 	# Process .csv files
 	dir_list = os.listdir(data_folder)
 	nb_subj = 0
@@ -35,7 +36,12 @@ def analyse_profiles(abs_curv=True):
 		else:
 			xvalues = np.arange(len(data[:,0]))
 			xlabel = "Incremental indexing"
-		plt.plot(xvalues,sp.gaussian_filter1d(data[:,1],sigma = sigma_smooth))
+		curve = ac.AnalyzeCurve(xvalues,sp.gaussian_filter1d(data[:,1],sigma = sigma_smooth))
+		#print(curve.local_extrema())
+		#print(curve.mean_thickness())
+		curve.characteristic_corpus_callosum()
+		plt.plot(xvalues,curve.thickness)
+		#plt.plot(xvalues,data[:,1])
 	plt.legend(data_names)
 	plt.xlabel(xlabel)
 	plt.ylabel("Thickness (a.u.)")
