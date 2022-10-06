@@ -15,7 +15,7 @@ nbins = 75 # number of bins to obtain slices of Fiedler vector
 graph_type = "topology" # "geometry" # or 
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 
-def analyse_profiles(abs_curv=True,sigma_smooth = 0.001):
+def analyse_profiles(abs_curv=True,sigma_smooth = 1.):
 	# Process .csv files
 	dir_list = os.listdir(data_folder)
 	nb_subj = 0
@@ -28,6 +28,7 @@ def analyse_profiles(abs_curv=True,sigma_smooth = 0.001):
 			nb_subj +=1
 			data_subjects.append(data)
 			data_names.append(filename[pos-3:pos])
+	all_extrema = []
 	for i in range(nb_subj):
 		data = data_subjects[i]
 		if abs_curv:
@@ -37,15 +38,27 @@ def analyse_profiles(abs_curv=True,sigma_smooth = 0.001):
 			xvalues = np.arange(len(data[:,0]))
 			xlabel = "Incremental indexing"
 		curve = ac.AnalyzeCurve(xvalues,sp.gaussian_filter1d(data[:,1],sigma = sigma_smooth))
+		#print(curve.total_length())
 		#print(curve.local_extrema())
 		#print(curve.mean_thickness())
-		curve.characteristic_corpus_callosum()
+		res.append(curve.characteristic_corpus_callosum())
 		plt.plot(xvalues,curve.thickness)
 		#plt.plot(xvalues,data[:,1])
 	plt.legend(data_names)
 	plt.xlabel(xlabel)
 	plt.ylabel("Thickness (a.u.)")
+	for i in range(nb_subj):
+		for r in (all_extrema[i][0],all_extrema[i][2]):
+			plt.plot(r[0],r[1],'.',markersize=10,color='k')
 	plt.show()
+
+def save_features(all_extrema,filename,names = ["min_thickness_isthmus","mean_thickness_body","max_thickness_genou"]):
+	nb_subj = len(all_extrema)
+	nb_features = len(all_extrema[0])
+	
+	for i in range(nb_subj):
+		for j in range(nb_parts):
+			
 
 def save_profiles(thickness,shape,filename):
 	length = shape.description.curv_abs()
