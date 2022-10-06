@@ -15,6 +15,7 @@ nbins = 75 # number of bins to obtain slices of Fiedler vector
 graph_type = "topology" # "geometry" # or 
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 
+
 def analyse_profiles(abs_curv=True,sigma_smooth = 1.):
 	# Process .csv files
 	dir_list = os.listdir(data_folder)
@@ -41,24 +42,48 @@ def analyse_profiles(abs_curv=True,sigma_smooth = 1.):
 		#print(curve.total_length())
 		#print(curve.local_extrema())
 		#print(curve.mean_thickness())
-		res.append(curve.characteristic_corpus_callosum())
+		curve.characteristic_corpus_callosum()
+		all_extrema.append(curve.characteristics)
 		plt.plot(xvalues,curve.thickness)
 		#plt.plot(xvalues,data[:,1])
 	plt.legend(data_names)
 	plt.xlabel(xlabel)
 	plt.ylabel("Thickness (a.u.)")
 	for i in range(nb_subj):
-		for r in (all_extrema[i][0],all_extrema[i][2]):
-			plt.plot(r[0],r[1],'.',markersize=10,color='k')
+		print(all_extrema[i].items())
+		for r in (all_extrema[i].items()):
+			print(r)
+			if not(type(r[1])==np.float64): # (position, value, index)
+				plt.plot(r[1][0],r[1][1],'.',markersize=10,color='k')
 	plt.show()
+	save_features(all_extrema,data_folder + "all_characteristics.csv")
 
-def save_features(all_extrema,filename,names = ["min_thickness_isthmus","mean_thickness_body","max_thickness_genou"]):
+def save_features(all_extrema,filename,delimiter=","):
 	nb_subj = len(all_extrema)
 	nb_features = len(all_extrema[0])
 	
+	row1 = ""
+	for key in all_extrema[0].items():
+		if not(type(key[1]) == np.float64):
+			row1 += key[0] + " (position) " + delimiter
+			row1 += key[0] + " (value) " + delimiter
+		else:
+			row1 += key[0] + " " + delimiter 
+	data = []
 	for i in range(nb_subj):
-		for j in range(nb_parts):
-			
+		row = []
+		for key in all_extrema[i].items():
+			if not(type(key[1]) == np.float64):
+				row.append(key[1][0])
+				row.append(key[1][1])
+			else:
+				row.append(key[1])
+		data.append(row)
+	print(data)
+	with open(filename, 'w') as f:
+		f.writelines(row1 + '\n')
+		np.savetxt(f, data[0:] , delimiter = delimiter, fmt ='%f')		
+
 
 def save_profiles(thickness,shape,filename):
 	length = shape.description.curv_abs()
