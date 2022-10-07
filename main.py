@@ -16,7 +16,7 @@ graph_type = "topology" # "geometry" # or
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 
 
-def analyse_profiles(abs_curv=True,sigma_smooth = 1.):
+def analyse_profiles(abs_curv=True,sigma_smooth = 0.0001):
 	# Process .csv files
 	dir_list = os.listdir(data_folder)
 	nb_subj = 0

@@ -55,6 +55,7 @@ class AnalyzeCurve:
 		return integrale/(x[-1]-x[0])
 		
 	def characteristic_corpus_callosum(self):
+		# Axe des x: Splenium -> Isthme -> Corps -> Genou/Bec
 		self.characteristics['min_thickness_isthmus'] = self.local_extrema()
 		self.characteristics['mean_thickness_body'] = self.mean_thickness()
 		self.characteristics['max_thickness_genou'] = self.local_extrema(a=0.8 , b= 1,min_max = 'max')
