@@ -102,11 +102,12 @@ def process_subject(name,fig_to_display):
 	shape = sh.Shape(filename = filename,graph_type = graph_type)
 	#print(shape.graph_to_coords())
 	
-	# 1.bis Extract bec
-	coords = shape.extract_bec()
+	# 1.bis Extract rostrum
+	coords, ind = shape.extract_rostrum()
 	fig = plt.figure(figsize=(15,9))
 	ax = plt.axes(projection="3d")
 	ax.scatter(coords[:,0],coords[:,1],coords[:,2],s=2)
+	ax.scatter(coords[ind,0],coords[ind,1],coords[ind,2],color = 'r',s=2)
 	ax.view_init(30,0)
 	plt.xlabel('x')
 	plt.ylabel('y')

@@ -129,10 +129,10 @@ class Shape:
 		self.description.compute_isolines()
 		
 	
-	def extract_bec(self):
+	def extract_rostrum(self):
 		# Heuristic:
 		# - 3/4 of Length
-		# - 1/2 of resulting shape
+		# - 1/3 bottom of resulting shape
 		# - the most at left
 		coord_nodes = self.graph_to_coords()
 		coords = np.zeros((len(coord_nodes),3),dtype=int)
@@ -142,4 +142,5 @@ class Shape:
 		coords = threshold(coords, 1, thres=0.7, inequality = "larger")
 		#print(coords)
 		coords = threshold(coords, 2, thres=0.3, inequality = "smaller")
-		return coords
+		ind = np.argmin(coords[:,1])
+		return coords, ind[0]
