@@ -96,7 +96,30 @@ class Shape:
 			self.is_empty = True
 		self.fiedler_vector = None
 		self.description = sd.ShapeDescription(None) # given by class shape_description
+		self.compute_numpy_coords()
+	
+	def graph_perturbation(self,coord,weight=0.1):
+		# Perturbation of node ind to make as if it was "far" from the rest of the graph
+		for n in self.graph.nodes:
+			dist = sum([ (n[i] - coord[i])**2 for i in range(3) ])
+			if dist==0:
+				break
+		print(n)
+		print(coord)
+		#for e in self.graph.edges([n]):
+		#	self.graph[n][e[1]]['weight']=weight
+		# Add a fictive edge
+		fictive_node = (n[0],n[1]-10,n[2]-10)
+		self.graph.add_edge(fictive_node,n,weight = weight)
+		return fictive_node
+
+	def get_fiedler_perturbation(self,coord,weight):
+		fictive_node = self.graph_perturbation(coord,weight)
+		self.get_fiedler()
+		self.graph.remove_node(fictive_node)
+		self.fiedler_vector = self.fiedler_vector[0:-1]
 		
+	
 	def get_fiedler(self):
 		self.fiedler_vector = nx.fiedler_vector(self.graph)
 		i_min = np.argmin(self.fiedler_vector)
@@ -104,6 +127,8 @@ class Shape:
 		coords = self.graph_to_coords()
 		if coords[i_min][1]>coords[i_max][1]: # y coordinate is approximately aligne with Fiedler vector, but BE CAREFUL, could change depending on the way the MRI acquisition is done
 			self.fiedler_vector = - self.fiedler_vector
+		self.i_min = i_min
+		self.i_max = i_max
 		
 	def graph_to_coords(self):
 		n = len(self.graph.nodes)
@@ -128,19 +153,22 @@ class Shape:
 	def compute_isolines(self):
 		self.description.compute_isolines()
 		
+	def compute_numpy_coords(self):
+		coord_nodes = self.graph_to_coords()
+		coords = np.zeros((len(coord_nodes),3),dtype=int)
+		for i in range(len(coords)):
+			coords[i,:] = coord_nodes[i]
+		self.coords = coords
 	
 	def extract_rostrum(self):
 		# Heuristic:
 		# - 3/4 of Length
 		# - 1/3 bottom of resulting shape
 		# - the most at left
-		coord_nodes = self.graph_to_coords()
-		coords = np.zeros((len(coord_nodes),3),dtype=int)
-		for i in range(len(coords)):
-			coords[i,:] = coord_nodes[i]
+		
 		#print(coords)
-		coords = threshold(coords, 1, thres=0.7, inequality = "larger")
+		coords = threshold(self.coords, 1, thres=0.7, inequality = "larger")
 		#print(coords)
 		coords = threshold(coords, 2, thres=0.3, inequality = "smaller")
 		ind = np.argmin(coords[:,1])
-		return coords, ind[0]
+		return coords, ind

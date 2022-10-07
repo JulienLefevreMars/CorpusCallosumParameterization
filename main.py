@@ -14,6 +14,7 @@ nbins = 45 # number of bins to obtain slices of Fiedler vector
  # size of window to smooth the thickness curves (not in .csv files)
 graph_type = "topology" # "geometry" # or 
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
+THRESHOLD_ROSTRUM = 3 # minimal distance between the rostrum and the maximum of Fiedler vector
 
 
 def analyse_profiles(abs_curv=True,sigma_smooth = 1.0):
@@ -102,17 +103,6 @@ def process_subject(name,fig_to_display):
 	shape = sh.Shape(filename = filename,graph_type = graph_type)
 	#print(shape.graph_to_coords())
 	
-	# 1.bis Extract rostrum
-	coords, ind = shape.extract_rostrum()
-	fig = plt.figure(figsize=(15,9))
-	ax = plt.axes(projection="3d")
-	ax.scatter(coords[:,0],coords[:,1],coords[:,2],s=2)
-	ax.scatter(coords[ind,0],coords[ind,1],coords[ind,2],color = 'r',s=2)
-	ax.view_init(30,0)
-	plt.xlabel('x')
-	plt.ylabel('y')
-	plt.show()
-	
 	# 2. Compute Fiedler vector	and extrema
 	shape.get_fiedler()
 	shape.add_description(nbins=nbins)
@@ -124,6 +114,34 @@ def process_subject(name,fig_to_display):
 		title = subject_name + "\n \n Fiedler vector"
 		vz.visualize_fiedler(shape.graph,shape.fiedler_vector,title=title,extrema=True)
 	plt.show()
+	
+	# 2.bis Extract rostrum
+	coords, ind = shape.extract_rostrum()
+	print(ind)
+	print(coords)
+	distance_rostrum_fiedler = np.sqrt(np.sum((coords[ind,:]-shape.coords[shape.i_max,:])**2))
+	print("Distance between rostrum and Fiedler max = " + str(distance_rostrum_fiedler))
+	
+	#if distance_rostrum_fiedler < THRESHOLD_ROSTRUM:
+	#shape.graph_perturbation(coords[ind,:])
+	#shape.get_fiedler()
+	#shape.add_description(nbins=nbins)
+	shape.get_fiedler_perturbation(coords[ind,:],0.0001)
+	shape.add_description(nbins=nbins)
+	vz.visualize_fiedler(shape.graph,shape.fiedler_vector,title=title,extrema=True)
+	#print(coords[ind][0],coords[ind][1],coords[ind][2])
+	plt.show()
+	
+	'''
+	fig = plt.figure(figsize=(15,9))
+	ax = plt.axes(projection="3d")
+	ax.scatter(coords[:,0],coords[:,1],coords[:,2],s=50)
+	ax.scatter(coords[ind,0],coords[ind,1],coords[ind,2],color = 'r',s=50)
+	ax.view_init(30,0)
+	plt.xlabel('x')
+	plt.ylabel('y')
+	plt.show()
+	'''
 
 	# 3. Isolines
 	shape.compute_isolines()
