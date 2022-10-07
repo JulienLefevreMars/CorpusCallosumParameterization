@@ -10,13 +10,13 @@ import sys
 import analyze_curve as ac
 
 use_fiedler = False # use Fiedler diameter to compute thickness
-nbins = 75 # number of bins to obtain slices of Fiedler vector
+nbins = 45 # number of bins to obtain slices of Fiedler vector
  # size of window to smooth the thickness curves (not in .csv files)
 graph_type = "topology" # "geometry" # or 
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 
 
-def analyse_profiles(abs_curv=True,sigma_smooth = 0.0001):
+def analyse_profiles(abs_curv=True,sigma_smooth = 1.0):
 	# Process .csv files
 	dir_list = os.listdir(data_folder)
 	nb_subj = 0
@@ -101,6 +101,16 @@ def process_subject(name,fig_to_display):
 	filename = data_folder + subject_name  +  ".nii.gz"
 	shape = sh.Shape(filename = filename,graph_type = graph_type)
 	#print(shape.graph_to_coords())
+	
+	# 1.bis Extract bec
+	coords = shape.extract_bec()
+	fig = plt.figure(figsize=(15,9))
+	ax = plt.axes(projection="3d")
+	ax.scatter(coords[:,0],coords[:,1],coords[:,2],s=2)
+	ax.view_init(30,0)
+	plt.xlabel('x')
+	plt.ylabel('y')
+	plt.show()
 	
 	# 2. Compute Fiedler vector	and extrema
 	shape.get_fiedler()

@@ -68,6 +68,19 @@ def add_valid_edge(g,inds,mask,graph_type="topology"):
 						#print(weight)
 					g.add_edge(inds,(x+i,y+j,z+k),weight=weight)
 
+
+def threshold(points, axis=0, thres=0.5, inequality = "larger"):
+	values = points[:,axis]
+	m = np.min(values)
+	L = np.max(values) - m
+	if inequality == "larger":
+		indices = np.where(values > thres*L + m)
+	else:
+		indices = np.where(values < thres*L + m)
+	print(indices)
+	return points[indices[0],:]
+
+
 class Shape:
 	def __init__(self,filename=None,graph=None,graph_type="geometry",**kwargs):
 		if not(filename is None):
@@ -115,4 +128,18 @@ class Shape:
 	def compute_isolines(self):
 		self.description.compute_isolines()
 		
-
+	
+	def extract_bec(self):
+		# Heuristic:
+		# - 3/4 of Length
+		# - 1/2 of resulting shape
+		# - the most at left
+		coord_nodes = self.graph_to_coords()
+		coords = np.zeros((len(coord_nodes),3),dtype=int)
+		for i in range(len(coords)):
+			coords[i,:] = coord_nodes[i]
+		#print(coords)
+		coords = threshold(coords, 1, thres=0.7, inequality = "larger")
+		#print(coords)
+		coords = threshold(coords, 2, thres=0.3, inequality = "smaller")
+		return coords
