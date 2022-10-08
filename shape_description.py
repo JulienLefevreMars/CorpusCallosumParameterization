@@ -90,6 +90,7 @@ class ShapeDescription:
 		barycenters = np.zeros((nbins-1,3))
 		for i in range(0,len(self.intervals)-1):
 			print(i)
+			print(self.intervals[i:i+2])
 			# 1. Skeletonization => # Could be refactored with compute_skeleton
 			indices = np.logical_and(self.texture >=self.intervals[i],self.texture<=self.intervals[i+1])
 			# warning, if <bins[i+1] indices is empty for i = len(bins)-1 because of histogram equalization that puts a lot of values on vmax

@@ -52,6 +52,8 @@ def visualize_mask(gifti_image):
 def visualize_fiedler_extrema(coords,fiedler_vector,ax):
 	ind_min = np.argmin(fiedler_vector)
 	ind_max = np.argmax(fiedler_vector)
+	print("Extrema Fiedler")
+	print(ind_min,ind_max)
 	ax.scatter(coords[ind_min,0],coords[ind_min,1],coords[ind_min,2],c="y",s=100)
 	ax.scatter(coords[ind_max,0],coords[ind_max,1],coords[ind_max,2],c="y",s=100)
 	

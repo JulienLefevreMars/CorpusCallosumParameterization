@@ -159,8 +159,17 @@ def process_subject(name,fig_to_display):
 		ax.view_init(0,0)
 	plt.show()
 	
-	for i in range(10): # HOW TO SET THAT ?
+	#### BUG Between Skeleton and reparameterization with rostrum perturbation
+	
+	# 5. Reparameterization
+	n_steps = 1
+	for i in range(n_steps): # HOW TO SET THAT ? (too large => divergence)
 		shape.description.reparameterize_texture()
+		plt.plot(np.sort(shape.description.texture))
+	plt.legend([str(i) for i in range(n_steps)])
+	plt.show()
+	
+	vz.visualize_fiedler(shape.graph,shape.description.texture,title="Reparameterized Fiedler",extrema=True)
 
 	barycenters = shape.description.barycenters
 	print(barycenters)
