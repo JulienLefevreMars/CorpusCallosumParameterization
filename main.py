@@ -159,15 +159,20 @@ def process_subject(name,fig_to_display):
 		ax.view_init(0,0)
 	plt.show()
 	
-	#### BUG Between Skeleton and reparameterization with rostrum perturbation
 	
 	# 5. Reparameterization
-	n_steps = 1
+	n_steps = 3
+	plt.plot(shape.description.texture/np.min(shape.description.texture))
+	#print(shape.description.intervals[0])
+	#print(shape.description.intervals[-1])
 	for i in range(n_steps): # HOW TO SET THAT ? (too large => divergence)
 		shape.description.reparameterize_texture()
-		plt.plot(np.sort(shape.description.texture))
+		plt.plot(shape.description.texture)
+	#print(shape.description.intervals[0])
+	#print(shape.description.intervals[-1])
 	plt.legend([str(i) for i in range(n_steps)])
 	plt.show()
+
 	
 	vz.visualize_fiedler(shape.graph,shape.description.texture,title="Reparameterized Fiedler",extrema=True)
 

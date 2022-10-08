@@ -60,6 +60,8 @@ class ShapeDescription:
 		# Remove nan
 		barycenters = barycenters[~np.isnan(barycenters).any(axis=1)]
 		self.barycenters = barycenters
+		self.nbins = len(self.barycenters)-1
+		self.compute_isolines()
 
 	def reparameterize_texture(self):
 		self.compute_skeleton(add_extremity=True)
@@ -71,6 +73,10 @@ class ShapeDescription:
 		#plt.show()
 		# Reparameterization
 		reparam_fiedler = np.zeros((len(self.texture),))
+		print(self.texture[1225])
+		print(self.intervals)
+		print("Length intervals " + str(len(self.intervals)))
+		print("Length barycenters " + str(len(length)))
 		for i in range(len(length)-1):
 			indices = np.logical_and(self.texture >= self.intervals[i],self.texture <= self.intervals[i+1] )
 			a = (cum_length[i+1] - cum_length[i])/(self.intervals[i+1] - self.intervals[i])
