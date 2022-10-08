@@ -57,6 +57,8 @@ class ShapeDescription:
 		if add_extremity:
 			barycenters = np.vstack([coords[np.argmin(self.texture),:],barycenters])
 			barycenters = np.vstack([barycenters,coords[np.argmax(self.texture),:]])
+		# Remove nan
+		barycenters = barycenters[~np.isnan(barycenters).any(axis=1)]
 		self.barycenters = barycenters
 
 	def reparameterize_texture(self):

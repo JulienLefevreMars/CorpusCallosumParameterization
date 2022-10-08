@@ -10,7 +10,7 @@ import sys
 import analyze_curve as ac
 
 use_fiedler = False # use Fiedler diameter to compute thickness
-nbins = 45 # number of bins to obtain slices of Fiedler vector
+nbins = 75 # number of bins to obtain slices of Fiedler vector
  # size of window to smooth the thickness curves (not in .csv files)
 graph_type = "topology" # "geometry" # or 
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
@@ -122,15 +122,12 @@ def process_subject(name,fig_to_display):
 	distance_rostrum_fiedler = np.sqrt(np.sum((coords[ind,:]-shape.coords[shape.i_max,:])**2))
 	print("Distance between rostrum and Fiedler max = " + str(distance_rostrum_fiedler))
 	
-	#if distance_rostrum_fiedler < THRESHOLD_ROSTRUM:
-	#shape.graph_perturbation(coords[ind,:])
-	#shape.get_fiedler()
-	#shape.add_description(nbins=nbins)
-	shape.get_fiedler_perturbation(coords[ind,:],0.0001)
-	shape.add_description(nbins=nbins)
-	vz.visualize_fiedler(shape.graph,shape.fiedler_vector,title=title,extrema=True)
+	if distance_rostrum_fiedler > THRESHOLD_ROSTRUM:
+		shape.get_fiedler_perturbation(coords[ind,:],0.0001)
+		shape.add_description(nbins=nbins)
+		vz.visualize_fiedler(shape.graph,shape.fiedler_vector,title="Rostrum constrained Fiedler",extrema=True)
 	#print(coords[ind][0],coords[ind][1],coords[ind][2])
-	plt.show()
+		plt.show()
 	
 	'''
 	fig = plt.figure(figsize=(15,9))
@@ -164,10 +161,14 @@ def process_subject(name,fig_to_display):
 	
 	for i in range(10): # HOW TO SET THAT ?
 		shape.description.reparameterize_texture()
-		
+
+	barycenters = shape.description.barycenters
+	print(barycenters)
 	if fig_to_display[1] == "1": 
 		title = subject_name + "\n \n Isolines of reparameterized Fiedler vector"
-		vz.visualize_fiedler(shape.graph,shape.description.isolines,title=title)
+		fig, ax = vz.visualize_fiedler(shape.graph,shape.description.isolines,title=title)
+		ax.scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r',s=100,marker='o')
+		ax.view_init(0,0)
 	plt.show()
 	'''
 	if fig_to_display[3] == "1":
