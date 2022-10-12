@@ -17,7 +17,7 @@ data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallo
 THRESHOLD_ROSTRUM = 3 # minimal distance between the rostrum and the maximum of Fiedler vector
 
 
-def analyse_profiles(abs_curv=True,sigma_smooth = 1.0):
+def analyse_profiles(abs_curv=True,sigma_smooth = 1.0,save=True,normalize=False):
 	# Process .csv files
 	dir_list = os.listdir(data_folder)
 	nb_subj = 0
@@ -35,6 +35,8 @@ def analyse_profiles(abs_curv=True,sigma_smooth = 1.0):
 		data = data_subjects[i]
 		if abs_curv:
 			xvalues = data[:,0]
+			if normalize:
+				xvalues = xvalues/xvalues[-1]
 			xlabel = "Skeleton length"
 		else:
 			xvalues = np.arange(len(data[:,0]))
@@ -57,7 +59,8 @@ def analyse_profiles(abs_curv=True,sigma_smooth = 1.0):
 			if not(type(r[1])==np.float64): # (position, value, index)
 				plt.plot(r[1][0],r[1][1],'.',markersize=10,color='k')
 	plt.show()
-	save_features(all_extrema,data_folder + "all_characteristics.csv")
+	if save:
+		save_features(all_extrema,data_folder + "all_characteristics.csv")
 
 def save_features(all_extrema,filename,delimiter=","):
 	nb_subj = len(all_extrema)
@@ -218,7 +221,7 @@ def process_subject(name,fig_to_display):
 
 if __name__ =="__main__":
 	if len(sys.argv)==1:
-		analyse_profiles(True) # True: skeleton length in x
+		analyse_profiles(abs_curv = True, save=False, normalize= True) # True: skeleton length in x
 	else:
 		# Process one subject
 		name = sys.argv[1]
