@@ -6,6 +6,7 @@ import os
 import shape as sh
 import vizu as vz
 import scipy.ndimage as sp
+import scipy as sc
 import sys
 import analyze_curve as ac
 
@@ -16,6 +17,20 @@ graph_type = "topology" # "geometry" # or
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 THRESHOLD_ROSTRUM = 3 # minimal distance between the rostrum and the maximum of Fiedler vector
 
+def average_profiles(abs_curv=True,sigma_smooth = 1.0,nsteps=100):
+	all_curves = analyse_profiles(abs_curv=True,sigma_smooth = 1.0,save=False,normalize=True)
+	xsamples = np.linspace(0,1,nsteps)
+	all_y = np.zeros((len(all_curves),nsteps))
+	for i in range(len(all_curves)):
+		f = sc.interpolate.interp1d(all_curves[i].curv_abs,all_curves[i].thickness,fill_value='extrapolate')
+		all_y[i,:] = f(xsamples)
+	mean_all_y = np.mean(all_y,axis=0)
+	std_all_y = np.std(all_y)
+	plt.plot(xsamples, mean_all_y, 'k-')
+	plt.fill_between(xsamples, mean_all_y-std_all_y, mean_all_y+std_all_y)
+	plt.title("Average Thickness Profile")
+	plt.xlabel("Normalized curvilinear absissa")
+	plt.show()
 
 def analyse_profiles(abs_curv=True,sigma_smooth = 1.0,save=True,normalize=False):
 	# Process .csv files
@@ -31,6 +46,7 @@ def analyse_profiles(abs_curv=True,sigma_smooth = 1.0,save=True,normalize=False)
 			data_subjects.append(data)
 			data_names.append(filename[pos-3:pos])
 	all_extrema = []
+	all_curves = []
 	for i in range(nb_subj):
 		data = data_subjects[i]
 		if abs_curv:
@@ -46,6 +62,7 @@ def analyse_profiles(abs_curv=True,sigma_smooth = 1.0,save=True,normalize=False)
 		#print(curve.local_extrema())
 		#print(curve.mean_thickness())
 		curve.characteristic_corpus_callosum()
+		all_curves.append(curve)
 		all_extrema.append(curve.characteristics)
 		plt.plot(xvalues,curve.thickness)
 		#plt.plot(xvalues,data[:,1])
@@ -61,6 +78,7 @@ def analyse_profiles(abs_curv=True,sigma_smooth = 1.0,save=True,normalize=False)
 	plt.show()
 	if save:
 		save_features(all_extrema,data_folder + "all_characteristics.csv")
+	return all_curves
 
 def save_features(all_extrema,filename,delimiter=","):
 	nb_subj = len(all_extrema)
@@ -221,7 +239,8 @@ def process_subject(name,fig_to_display):
 
 if __name__ =="__main__":
 	if len(sys.argv)==1:
-		analyse_profiles(abs_curv = True, save=False, normalize= True) # True: skeleton length in x
+		#all_curves = analyse_profiles(abs_curv = True, save=False, normalize= True) # True: skeleton length in x
+		average_profiles(abs_curv=True,sigma_smooth = 1.0,nsteps=100)
 	else:
 		# Process one subject
 		name = sys.argv[1]
