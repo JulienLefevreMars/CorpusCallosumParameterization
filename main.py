@@ -14,7 +14,8 @@ use_fiedler = False # use Fiedler diameter to compute thickness
 nbins = 75 # number of bins to obtain slices of Fiedler vector
  # size of window to smooth the thickness curves (not in .csv files)
 graph_type = "topology" # "geometry" # or 
-data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
+#data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
+data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/wetransfer_mask-cc_2022-11-04_1559/"
 THRESHOLD_ROSTRUM = 3 # minimal distance between the rostrum and the maximum of Fiedler vector
 
 def average_profiles(abs_curv=True,sigma_smooth = 1.0,nsteps=100):

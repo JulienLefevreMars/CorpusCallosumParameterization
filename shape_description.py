@@ -73,7 +73,7 @@ class ShapeDescription:
 		#plt.show()
 		# Reparameterization
 		reparam_fiedler = np.zeros((len(self.texture),))
-		print(self.texture[1225])
+		#print(self.texture[1225])
 		print(self.intervals)
 		print("Length intervals " + str(len(self.intervals)))
 		print("Length barycenters " + str(len(length)))
