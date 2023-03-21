@@ -16,7 +16,7 @@ nbins = 75 # number of bins to obtain slices of Fiedler vector
 graph_type = "topology" # "geometry" # or 
 #data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/isthme_du_corps_calleux/"
 data_folder = "/home/julienlefevre/ownCloud/Documents/Recherche/Data/CorpusCallosum/wetransfer_mask-cc_2022-11-04_1559/"
-THRESHOLD_ROSTRUM = 3 # minimal distance between the rostrum and the maximum of Fiedler vector
+THRESHOLD_ROSTRUM = 1 # minimal distance between the rostrum and the maximum of Fiedler vector
 
 def average_profiles(abs_curv=True,sigma_smooth = 1.0,nsteps=100):
 	all_curves = analyse_profiles(abs_curv=True,sigma_smooth = 1.0,save=False,normalize=True)
@@ -203,7 +203,7 @@ def process_subject(name,fig_to_display):
 	if fig_to_display[1] == "1": 
 		title = subject_name + "\n \n Isolines of reparameterized Fiedler vector"
 		fig, ax = vz.visualize_fiedler(shape.graph,shape.description.isolines,title=title)
-		ax.scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r',s=100,marker='o')
+		#ax.scatter(barycenters[:,0], barycenters[:,1], barycenters[:,2],c='r',s=100,marker='o')
 		ax.view_init(0,0)
 	plt.show()
 	'''

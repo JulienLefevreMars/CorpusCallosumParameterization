@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import matplotlib.ticker as tick
 
 def set_axes_equal(ax,coords=None):
 	'''Make axes of 3D plot have equal scale so that spheres appear as spheres,
@@ -54,8 +55,8 @@ def visualize_fiedler_extrema(coords,fiedler_vector,ax):
 	ind_max = np.argmax(fiedler_vector)
 	print("Extrema Fiedler")
 	print(ind_min,ind_max)
-	ax.scatter(coords[ind_min,0],coords[ind_min,1],coords[ind_min,2],c="y",s=100)
-	ax.scatter(coords[ind_max,0],coords[ind_max,1],coords[ind_max,2],c="y",s=100)
+	ax.scatter(coords[ind_min,0],coords[ind_min,1],coords[ind_min,2],c="y",s=500)
+	ax.scatter(coords[ind_max,0],coords[ind_max,1],coords[ind_max,2],c="y",s=500)
 	
 	
 def visualize_fiedler(graph,fiedler_vector=None,title="",fig=None,ax=None,extrema=False):
@@ -68,12 +69,20 @@ def visualize_fiedler(graph,fiedler_vector=None,title="",fig=None,ax=None,extrem
 	#ax = fig.add_subplot(111, projection='3d')
 		ax = plt.axes(projection="3d")
 	#ax.set_box_aspect((1,1,1))
-	ax.scatter(coords[:,0],coords[:,1],coords[:,2],c=fiedler_vector,cmap="jet",s=2)
+	fv=ax.scatter(coords[:,0],coords[:,1],coords[:,2],c=fiedler_vector,cmap="jet",s=50)
 	ax.view_init(30,0)
+	m = np.min(fiedler_vector)
+	M = np.max(fiedler_vector)
+	cbar=plt.colorbar(fv,ax=ax,fraction=0.01, pad=-0.2,ticks=[m,0,M])
+	cbar.ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.4f'))
+	cbar.ax.tick_params(labelsize=14)
+	#plt.colorbar(fv,ax=ax,fraction=0.01, pad=-0.2)
 	if extrema:
 		visualize_fiedler_extrema(coords,fiedler_vector,ax)
 	plt.title(title)
 	set_axes_equal(ax)
+	plt.axis("off")
+
 	return fig,ax
 	#plt.show()
 	
