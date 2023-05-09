@@ -143,12 +143,12 @@ def process_subject(name,fig_to_display):
 	print(coords)
 	distance_rostrum_fiedler = np.sqrt(np.sum((coords[ind,:]-shape.coords[shape.i_max,:])**2))
 	print("Distance between rostrum and Fiedler max = " + str(distance_rostrum_fiedler))
-	
+	print(shape.coords[shape.i_max,0],shape.coords[shape.i_max,1],shape.coords[shape.i_max,2])
+		
 	if distance_rostrum_fiedler > THRESHOLD_ROSTRUM:
 		shape.get_fiedler_perturbation(coords[ind,:],0.0001)
 		shape.add_description(nbins=nbins)
 		vz.visualize_fiedler(shape.graph,shape.fiedler_vector,title="Rostrum constrained Fiedler",extrema=True)
-	#print(coords[ind][0],coords[ind][1],coords[ind][2])
 		plt.show()
 	
 	'''

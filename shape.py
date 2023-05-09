@@ -127,6 +127,8 @@ class Shape:
 		coords = self.graph_to_coords()
 		if coords[i_min][1]>coords[i_max][1]: # y coordinate is approximately aligne with Fiedler vector, but BE CAREFUL, could change depending on the way the MRI acquisition is done
 			self.fiedler_vector = - self.fiedler_vector
+		i_min = np.argmin(self.fiedler_vector) # Ugly :-)
+		i_max = np.argmax(self.fiedler_vector)
 		self.i_min = i_min
 		self.i_max = i_max
 		
